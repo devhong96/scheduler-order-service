@@ -32,8 +32,6 @@ public class CancelOrderEventListener {
 
         //TODO 로직 정리
         //읽은 도서 리스트 가져오기
-        List<String> readEbookIds = memberServiceClient
-                .findOwnedEbookIdsByReaderId(readerId, true);
 
 //        List<EbookOrderInfo> updatedOrders = ebookOrderList.stream()
 //                .peek(ebookOrder -> {

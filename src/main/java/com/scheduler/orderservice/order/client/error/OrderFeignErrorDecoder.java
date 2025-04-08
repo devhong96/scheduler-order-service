@@ -7,7 +7,7 @@ import jakarta.ws.rs.NotFoundException;
 import org.springframework.stereotype.Component;
 
 @Component
-public class EbookFeignErrorDecoder implements ErrorDecoder {
+public class OrderFeignErrorDecoder implements ErrorDecoder {
 
     @Override
     public Exception decode(String methodKey, Response response) {
