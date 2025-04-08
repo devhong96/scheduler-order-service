@@ -10,7 +10,7 @@ import static org.springframework.cloud.config.client.ConfigClientProperties.AUT
 
 @FeignClient(
         name = "scheduler-order-service",
-        url =  "${scheduler_course_service_url:}",
+        url =  "${scheduler_order_service_url:}",
         path = "/feign-order",
         configuration = OrderFeignErrorDecoder.class
 )

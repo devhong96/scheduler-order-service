@@ -2,7 +2,6 @@ package com.scheduler.orderservice.order.payment.event.direct.vendor;
 
 import com.scheduler.orderservice.order.common.domain.OrderCategory;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEvent;
 
 import static com.scheduler.orderservice.order.payment.nicepay.dto.NicePayResponse.NicePayOrderResponse;

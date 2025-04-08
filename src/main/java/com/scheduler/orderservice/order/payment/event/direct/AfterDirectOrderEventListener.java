@@ -16,7 +16,6 @@ import java.util.List;
 import static com.scheduler.orderservice.order.client.dto.EbookDto.FeignEbookResponse;
 import static com.scheduler.orderservice.order.client.dto.MemberFeignDto.CreateOwnedEbookListDto;
 import static com.scheduler.orderservice.order.client.dto.MemberFeignDto.FeignOwnedEbookDto;
-import static com.scheduler.orderservice.order.client.dto.OrderDto.UpdateEbookSalesCount;
 import static com.scheduler.orderservice.order.common.domain.OrderCategory.TUITION;
 import static com.scheduler.orderservice.order.payment.kakao.dto.KakaoPayRequest.KakaoOrderResponse;
 import static org.springframework.transaction.event.TransactionPhase.AFTER_COMMIT;

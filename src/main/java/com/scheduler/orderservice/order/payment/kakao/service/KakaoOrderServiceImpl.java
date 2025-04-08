@@ -32,7 +32,7 @@ import static com.scheduler.orderservice.order.payment.kakao.dto.KakaoCancelOrde
 import static com.scheduler.orderservice.order.payment.kakao.dto.KakaoCancelOrderDto.CancelOrderPreRequest.SingleEbookCancelOrder;
 import static com.scheduler.orderservice.order.payment.kakao.dto.KakaoPayRequest.*;
 import static com.scheduler.orderservice.order.payment.kakao.dto.KakaoSearchOrderDto.KakaoEbookSearchOrderResponse;
-import static org.springframework.http.HttpHeaders.*;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @Slf4j

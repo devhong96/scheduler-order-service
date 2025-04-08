@@ -26,7 +26,7 @@ import static com.scheduler.orderservice.order.payment.nicepay.dto.NicePayReques
 import static com.scheduler.orderservice.order.payment.nicepay.dto.NicePayRequest.NicePayPreOrderRequest;
 import static com.scheduler.orderservice.order.payment.nicepay.dto.NicePayResponse.*;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.springframework.http.HttpHeaders.*;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @Slf4j
