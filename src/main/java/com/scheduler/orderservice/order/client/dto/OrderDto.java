@@ -86,6 +86,8 @@ public class OrderDto {
 
         private String username;
 
+        private Integer quantity;
+
         @Enumerated(STRING)
         private OrderCategory orderCategory;
 
@@ -140,15 +142,5 @@ public class OrderDto {
         private String ebookId;
         private String ebookName;
         private Integer cancelAmount;
-    }
-
-    @Getter
-    @Setter
-    public static class UpdateEbookSalesCount {
-
-        List<String> ebookIds;
-        public UpdateEbookSalesCount(List<String> ebookIds) {
-            this.ebookIds = ebookIds;
-        }
     }
 }

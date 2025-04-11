@@ -38,7 +38,7 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-config:4.2.1'
     implementation 'org.springframework.cloud:spring-cloud-starter-circuitbreaker-resilience4j:3.2.0'
     implementation 'org.springframework.cloud:spring-cloud-starter-bus-amqp:4.2.1'
-    implementation 'org.springframework.cloud:spring-cloud-starter-bus-kafka:4.2.1'
+    implementation 'org.springframework.kafka:spring-kafka'
     implementation 'org.apache.kafka:connect-api:3.9.0'
 
     implementation 'io.github.openfeign:feign-okhttp:13.5'

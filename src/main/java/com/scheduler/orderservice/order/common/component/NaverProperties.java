@@ -10,11 +10,39 @@ import org.springframework.stereotype.Component;
 @Getter
 @Setter
 public class NaverProperties {
-    private String baseUrl;
-    private String partnerId;
-    private String clientId;
-    private String clientSecret;
-    private String chainId;
-    private String returnUrl;
+
+    private NaverUrl naverUrl;
+    private NaverClient naverClient;
+    private NaverHeader naverHeader;
+
+    @Getter
+    @Setter
+    public static class NaverUrl {
+        private String applyUrl;
+        private String cancelUrl;
+        private String historyUrl;
+        private String purchaseConfirmUrl;
+        private String baseUrl;
+    }
+
+    @Getter
+    @Setter
+    public static class NaverClient {
+        private String clientId;
+        private String clientSecret;
+        private String chainId;
+        private String partnerId;
+    }
+
+    @Getter
+    @Setter
+    public static class NaverHeader {
+
+        private String clientId;
+        private String clientSecret;
+        private String chainId;
+        private String idempotencyKey;
+
+    }
 }
 

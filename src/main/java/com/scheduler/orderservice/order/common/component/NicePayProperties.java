@@ -10,7 +10,23 @@ import org.springframework.stereotype.Component;
 @Getter
 @Setter
 public class NicePayProperties {
-    private String clientKey;
-    private String secretKey;
-    private String returnUrl;
+
+    private NiceClient niceClient;
+    private NiceUrl niceUrl;
+
+    @Getter
+    @Setter
+    public static class NiceClient {
+        private String clientKey;
+        private String secretKey;
+    }
+
+    @Getter
+    @Setter
+    public static class NiceUrl {
+        private String paymentUrl;
+        private String checkAmountUrl;
+        private String baseUrl;
+
+    }
 }

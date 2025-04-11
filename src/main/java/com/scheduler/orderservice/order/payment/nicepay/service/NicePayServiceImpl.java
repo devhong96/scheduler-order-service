@@ -1,23 +1,23 @@
 package com.scheduler.orderservice.order.payment.nicepay.service;
 
+import com.scheduler.orderservice.infra.exception.custom.PaymentException;
 import com.scheduler.orderservice.order.client.MemberServiceClient;
 import com.scheduler.orderservice.order.common.component.NicePayProperties;
 import com.scheduler.orderservice.order.common.component.RedisOrderCache;
 import com.scheduler.orderservice.order.common.domain.OrderCategory;
 import com.scheduler.orderservice.order.common.domain.OrderType;
 import com.scheduler.orderservice.order.common.dto.DirectOrderDto;
-import com.scheduler.orderservice.order.exception.custom.NicePayOrderException;
+import com.scheduler.orderservice.infra.exception.custom.NicePayOrderException;
 import com.scheduler.orderservice.order.payment.event.direct.vendor.NicePayDirectAfterOrderEvent;
 import com.scheduler.orderservice.order.payment.event.direct.vendor.NicePayDirectOrderEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.util.*;
 
@@ -34,7 +34,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 @RequiredArgsConstructor
 public class NicePayServiceImpl implements NicePayService {
 
-    private final NicePayProperties nicePayProperties;
+    private final WebClient webClient;
+    private final NicePayProperties properties;
     private final MemberServiceClient memberServiceClient;
     private final ApplicationEventPublisher eventPublisher;
     private final RedisOrderCache redisOrderCache;
@@ -76,23 +77,18 @@ public class NicePayServiceImpl implements NicePayService {
     private NicePayOrderResponse getNicePayEbookOrderResponse(NicePayPreOrderRequest nicePayPreOrderRequest) {
 
         String tid = nicePayPreOrderRequest.getTid();
-        int amount = nicePayPreOrderRequest.getAmount();
 
-        HttpHeaders headers = getHeaders();
+        Map<String, Integer> requestBody = new HashMap<>();
+        requestBody.put("amount", nicePayPreOrderRequest.getAmount());
 
-        Map<String, Integer> map = new HashMap<>();
-        map.put("amount", amount);
+        Mono<NicePayOrderResponse> responseMono = webClient.post()
+                .uri(properties.getNiceUrl().getPaymentUrl() + tid)
+                .headers(header -> header.addAll(getHeaders()))
+                .bodyValue(requestBody)
+                .retrieve()
+                .bodyToMono(NicePayOrderResponse.class);
 
-        HttpEntity<Map<String, Integer>> requestEntity = new HttpEntity<>(map, headers);
-
-        ResponseEntity<NicePayOrderResponse> response = new RestTemplate()
-                .postForEntity(
-                        "https://sandbox-api.nicepay.co.kr/v1/payments" + "/" + tid,
-                        requestEntity,
-                        NicePayOrderResponse.class
-                );
-        
-        return response.getBody();
+        return responseMono.blockOptional().orElseThrow(PaymentException::new);
     }
 
     private void validateNicePayOrder(NicePayPreOrderRequest nicePayPreOrderRequest) {
@@ -103,29 +99,24 @@ public class NicePayServiceImpl implements NicePayService {
         Map<String, Integer> requestBody = new HashMap<>();
         requestBody.put("amount", amount);
 
-        HttpHeaders headers = getHeaders();
-        HttpEntity<Map<String, Integer>> requestEntity = new HttpEntity<>(requestBody, headers);
+        Mono<NicePayCheckAmountResponse> responseMono = webClient.post()
+                .uri(properties.getNiceUrl().getCheckAmountUrl() + tid)
+                .headers(header -> header.addAll(getHeaders()))
+                .bodyValue(requestBody)
+                .retrieve()
+                .bodyToMono(NicePayCheckAmountResponse.class);
 
-        ResponseEntity<NicePayCheckAmountResponse> response = new RestTemplate()
-                .postForEntity(
-                        "https://sandbox-api.nicepay.co.kr/v1/check-amount" + "/" + tid,
-                        requestEntity,
-                        NicePayCheckAmountResponse.class
-                );
+        NicePayCheckAmountResponse Response = responseMono.blockOptional().orElseThrow(PaymentException::new);
 
-        NicePayCheckAmountResponse body = response.getBody();
-
-        String resultCode = Objects.requireNonNull(body).getResultCode();
-        boolean isValid = body.getIsValid();
-        String resultTid = body.getTid();
+        String resultCode = Objects.requireNonNull(Response).getResultCode();
+        boolean isValid = Response.getIsValid();
+        String resultTid = Response.getTid();
 
         if(!isValid && !resultTid.equals(tid) && !resultCode.equals("0000"))
             throw new NicePayOrderException();
     }
 
     public void cancelEbookNicepayOrder(NicePayCancelOrderRequest nicePayCancelOrderRequest) {
-
-        HttpHeaders headers = getHeaders();
 
         String cancelAmt = nicePayCancelOrderRequest.getCancelAmt();
         String reason = nicePayCancelOrderRequest.getReason();
@@ -137,23 +128,20 @@ public class NicePayServiceImpl implements NicePayService {
         requestBody.put("orderId", UUID.randomUUID().toString());
         requestBody.put("reason", reason);
 
-        HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(requestBody, headers);
+        Mono<NicePayCancelOrderResponse> responseMono = webClient.post()
+                .uri(properties.getNiceUrl().getPaymentUrl() + tid + "/cancel")
+                .headers(header -> header.addAll(getHeaders()))
+                .bodyValue(requestBody)
+                .retrieve()
+                .bodyToMono(NicePayCancelOrderResponse.class);
 
-        ResponseEntity<NicePayCancelOrderResponse> response = new RestTemplate()
-                .postForEntity(
-                        "https://sandbox-api.nicepay.co.kr/v1/payments" + "/" + tid + "/" + "cancel",
-                        requestEntity,
-                        NicePayCancelOrderResponse.class
-                );
-
-        log.info(response.toString());
-
+        log.info(responseMono.toString());
     }
 
     private HttpHeaders getHeaders() {
 
-        String clientKey = nicePayProperties.getClientKey();
-        String secretKey = nicePayProperties.getSecretKey();
+        String clientKey = properties.getNiceClient().getClientKey();
+        String secretKey = properties.getNiceClient().getSecretKey();
         String credentials = clientKey + ":" + secretKey;
 
         String encodedCredentials = Base64.getEncoder().encodeToString(credentials.getBytes(UTF_8));

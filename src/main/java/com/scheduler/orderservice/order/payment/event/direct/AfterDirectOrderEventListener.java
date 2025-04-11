@@ -10,12 +10,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionalEventListener;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static com.scheduler.orderservice.order.client.dto.EbookDto.FeignEbookResponse;
-import static com.scheduler.orderservice.order.client.dto.MemberFeignDto.CreateOwnedEbookListDto;
-import static com.scheduler.orderservice.order.client.dto.MemberFeignDto.FeignOwnedEbookDto;
 import static com.scheduler.orderservice.order.common.domain.OrderCategory.TUITION;
 import static com.scheduler.orderservice.order.payment.kakao.dto.KakaoPayRequest.KakaoOrderResponse;
 import static org.springframework.transaction.event.TransactionPhase.AFTER_COMMIT;
@@ -65,25 +59,5 @@ public class AfterDirectOrderEventListener {
 
         }
 
-    }
-
-    private CreateOwnedEbookListDto createOwnedEbook(
-            String readerId, String orderId,
-            FeignEbookResponse feignEbookResponse
-    ) {
-
-        List<FeignOwnedEbookDto> ebookListResponses = new ArrayList<>();
-
-        FeignOwnedEbookDto ebookInfo = new FeignOwnedEbookDto(
-                feignEbookResponse.getEbookId(),
-                orderId,
-                feignEbookResponse.getCoverFileUrl(),
-                feignEbookResponse.getEbookName(),
-                feignEbookResponse.getAuthorName()
-        );
-
-        ebookListResponses.add(ebookInfo);
-
-        return new CreateOwnedEbookListDto(readerId, ebookListResponses);
     }
 }

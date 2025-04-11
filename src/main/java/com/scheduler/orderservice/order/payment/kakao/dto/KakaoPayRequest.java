@@ -90,7 +90,7 @@ public class KakaoPayRequest {
     @ToString
     @AllArgsConstructor
     @JsonNaming(SnakeCaseStrategy.class)
-    public static class KakaoEbookPreOrderResponse {
+    public static class KakaoPreOrderResponse {
 
         private String tid;
         private String nextRedirectAppUrl;
@@ -105,7 +105,7 @@ public class KakaoPayRequest {
     @Builder
     @AllArgsConstructor
     @JsonNaming(SnakeCaseStrategy.class)
-    public static class KakaoEbookOrderApproveRequest {
+    public static class KakaoOrderApproveRequest {
 
         private String cid;
         private String tid;
@@ -170,7 +170,7 @@ public class KakaoPayRequest {
 
     @Getter
     @Builder
-    public static class KakaoEbookOrderSearchRequest {
+    public static class KakaoOrderSearchRequest {
         private String cid; // 가맹점 코드
         private String tid; // 결제 고유번호, 20자
     }

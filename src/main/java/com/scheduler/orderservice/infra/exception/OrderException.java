@@ -2,6 +2,7 @@ package com.scheduler.orderservice.infra.exception;
 
 import com.scheduler.orderservice.infra.exception.custom.AuthorityException;
 import com.scheduler.orderservice.infra.exception.custom.InvalidAuthNumException;
+import com.scheduler.orderservice.infra.exception.custom.NicePayOrderException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -29,5 +30,10 @@ public class OrderException {
     @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<String> handleNoSuchElementException(NoSuchElementException e) {
         return new ResponseEntity<>(e.getMessage(), NOT_FOUND);
+    }
+
+    @ExceptionHandler(NicePayOrderException.class)
+    public ResponseEntity<String> handleNicePayOrderException() {
+        return new ResponseEntity<>("authCode error", FORBIDDEN);
     }
 }

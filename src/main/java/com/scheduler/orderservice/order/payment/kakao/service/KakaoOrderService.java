@@ -5,15 +5,15 @@ import com.scheduler.orderservice.order.common.domain.OrderType;
 
 import static com.scheduler.orderservice.order.payment.kakao.dto.KakaoCancelOrderDto.CancelOrderPreRequest;
 import static com.scheduler.orderservice.order.payment.kakao.dto.KakaoPayRequest.*;
-import static com.scheduler.orderservice.order.payment.kakao.dto.KakaoSearchOrderDto.KakaoEbookSearchOrderResponse;
+import static com.scheduler.orderservice.order.payment.kakao.dto.KakaoSearchOrderDto.KakaoSearchOrderResponse;
 
 public interface KakaoOrderService {
 
-    KakaoEbookPreOrderResponse kakaoEbookPreOrder(String accessToken, KakaoPreOrderRequest kakaoPreOrderRequest);
+    KakaoPreOrderResponse kakaoPreOrder(String accessToken, KakaoPreOrderRequest kakaoPreOrderRequest);
 
     KakaoOrderResponse createKakaoOrder(OrderType orderType, OrderCategory orderCategory, String orderId, String pgToken);
 
-    KakaoEbookSearchOrderResponse searchEbookKakaoOrder(String tid);
+    KakaoSearchOrderResponse searchKakaoOrder(String tid);
 
     void prepareToCancelKakaoOrder(String accessToke, CancelOrderPreRequest cancelOrderPreRequest);
 }
