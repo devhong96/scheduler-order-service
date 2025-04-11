@@ -53,6 +53,46 @@ eureka:
     register-with-eureka: false
     fetch-registry: false
 
+kakao :
+  kakao-url:
+    ready-url : "https://open-api.kakaopay.com/online/v1/payment/ready"
+    approve-url : "https://open-api.kakaopay.com/online/v1/payment/approve"
+    cancel-url : "https://open-api.kakaopay.com/online/v1/payment/cancel"
+    order-url : "https://open-api.kakaopay.com/online/v1/payment/order"
+    base-url: "http://localhost:8000/"
+  kakao-client :
+    #   가맹점 코드, 10자
+    cid : "TC0ONETIME"
+    #   가맹점 회원 id
+    partner_user_id : "partner_user_id"
+    secret-key : '{cipher}AQB95NMfGJVzVOcQNuiO9Ute1ag7Krewr3db4I+tf3ez7fdYYh9+XcotvjXFoCDADNygVrdDGH9oH1XM0Aw12IOSZL1GSPHNNdFfTD0N5zE7fX5stlPK1b8QPx8zIJt3iJlvmQAEH+e0ivnX3V/5EdCsHVPawMuVn6Nb7F+F8ATPKz7OlmLDXb8z2+Ss9eTatCBhhJReu+GJK65/sJhNb4mfFPHNeiY/IyuPViXn6+4S6bXQbUWtjY5mQWzDcZKOSqim3SpV/eP7G7r6n2czdDWCHc1R5fxqbC3XhiL3xTVWNeQsddIqfwwvx9HSSgd2NQwbbtCB4nDSKH/0kPaa54U6QaOhS0InYt8RcFj4Mh6k6+6aqKBtLK0veiZZ3ZVA18PG/xifeHUtRveUJf24p7cIqV9TDwM89sA4Gof3m1n+gg=='
+
+naver :
+  naver-header:
+    client-id: 'X-Naver-Client-Id'
+    client-secret: 'X-Naver-Client-Secret'
+    chain-id: 'X-NaverPay-Chain-Id'
+    idempotency-key: 'X-NaverPay-Idempotency-Key'
+  naver-url:
+    apply-url: '/naverpay/payments/v2.2/apply/payment'
+    cancel-url: '/naverpay/payments/v1/cancel'
+    history-url: '/naverpay/payments/v2.2/list/history'
+    purchase-confirm-url: '/naverpay/payments/v1/purchase-confirm'
+    base-url: 'https://seho0218.synology.me:8087/scheduler-order-service/'
+  naver-client:
+    client-id:
+    client-secret:
+    chain-Id:
+    partner-id:
+
+nicepay :
+  nice-url :
+    payment-url : 'https://sandbox-api.nicepay.co.kr/v1/payments/'
+    check-amount-url : 'https://sandbox-api.nicepay.co.kr/v1/check-amount'
+  nice-client:
+    clientKey :
+    secretKey :
+
 scheduler_order_service_url: http://localhost:8080
 
 management:

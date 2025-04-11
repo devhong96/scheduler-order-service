@@ -13,14 +13,17 @@ public class KakaoDirectOrderEvent extends ApplicationEvent {
 
     private final String username;
 
+    private final Integer quantity;
+
     private final OrderCategory orderCategory;
 
     private final KakaoOrderResponse kakaoOrderResponse;
 
-    public KakaoDirectOrderEvent(Object source, String studentId, String username, OrderCategory orderCategory, KakaoOrderResponse kakaoOrderResponse) {
+    public KakaoDirectOrderEvent(Object source, String studentId, String username, Integer quantity, OrderCategory orderCategory, KakaoOrderResponse kakaoOrderResponse) {
         super(source);
         this.studentId = studentId;
         this.username = username;
+        this.quantity = quantity;
         this.orderCategory = orderCategory;
         this.kakaoOrderResponse = kakaoOrderResponse;
     }

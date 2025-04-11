@@ -1,5 +1,6 @@
 package com.scheduler.orderservice.order.payment.naver.service;
 
+import com.scheduler.orderservice.infra.exception.custom.PaymentException;
 import com.scheduler.orderservice.order.client.MemberServiceClient;
 import com.scheduler.orderservice.order.common.component.NaverProperties;
 import com.scheduler.orderservice.order.common.component.RedisOrderCache;
@@ -13,12 +14,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
@@ -33,6 +35,7 @@ import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED;
 @RequiredArgsConstructor
 public class NaverOrderServiceImpl implements NaverOrderService {
 
+    private final WebClient webClient;
     private final NaverProperties properties;
     private final MemberServiceClient memberServiceClient;
     private final RedisOrderCache redisOrderCache;
@@ -51,7 +54,7 @@ public class NaverOrderServiceImpl implements NaverOrderService {
         String studentId = studentInfo.getStudentId();
         String username = studentInfo.getUsername();
 
-        NaverOrderResponse response = getNaverEbookOrderResponse(resultCode, paymentId);
+        NaverOrderResponse response = getNaverOrderResponse(resultCode, paymentId);
 
         switch (orderType) {
             case DIRECT: {
@@ -71,9 +74,12 @@ public class NaverOrderServiceImpl implements NaverOrderService {
     }
 
 
-    private NaverOrderResponse getNaverEbookOrderResponse(String resultCode, String paymentId) {
+    private NaverOrderResponse getNaverOrderResponse(String resultCode, String paymentId) {
         HttpHeaders headers = getHeaders();
-        headers.set("X-Naver-Client-Secret", properties.getClientSecret());
+        headers.set(
+                properties.getNaverHeader().getClientSecret(),
+                properties.getNaverClient().getClientSecret()
+        );
 
         if(!resultCode.equals(Success.toString())) {
             throw new RuntimeException("");
@@ -82,56 +88,62 @@ public class NaverOrderServiceImpl implements NaverOrderService {
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("paymentId", paymentId);
 
-        HttpEntity<MultiValueMap<String, String>> mapHttpEntity = new HttpEntity<>(body, headers);
+        Mono<NaverOrderResponse> responseMono = webClient.post()
+                .uri(properties.getNaverUrl().getBaseUrl() + "/" +
+                        properties.getNaverClient().getPartnerId() + "/" +
+                        properties.getNaverUrl().getApplyUrl())
+                .headers(header -> header.addAll(getHeaders()))
+                .bodyValue(body)
+                .retrieve()
+                .bodyToMono(NaverOrderResponse.class);
 
-        ResponseEntity<NaverOrderResponse> naverOrderResponse = new RestTemplate()
-                .postForEntity(
-                properties.getBaseUrl() + "/" + "naverpay-partner" + "/naverpay/payments/v2.2/apply/payment",
-                mapHttpEntity,
-                NaverOrderResponse.class
-        );
-
-        return naverOrderResponse.getBody();
+        return responseMono.blockOptional().orElseThrow(() -> new PaymentException(""));
     }
 
 
     @Deprecated
-    public void cancelEbookNaverOrder(CancelNaverEbookDto cancelNaverEbookDto) {
+    public void cancelNaverOrder(CancelNaverDto cancelNaverDto) {
 
         HttpHeaders headers = getHeaders();
 
-        HttpEntity<CancelNaverEbookDto> requestEntity = new HttpEntity<>(cancelNaverEbookDto, headers);
+        HttpEntity<CancelNaverDto> requestEntity = new HttpEntity<>(cancelNaverDto, headers);
 
         new RestTemplate().postForEntity(
-                properties.getBaseUrl() + "/" + properties.getPartnerId() + "/naverpay/payments/v1/cancel",
+                properties.getNaverUrl().getBaseUrl() + "/" +
+                        properties.getNaverClient().getClientId() +
+                        properties.getNaverUrl().getCancelUrl(),
                 requestEntity,
                 NaverPreOrderResponse.class
         );
     }
 
     @Deprecated
-    public SearchNaverEbookOrderHistoryResponse searchEbookNaverOrderHistory(String paymentId,
-                                                                             SearchNaverOrderHistoryDto searchHistory
+    public SearchNaverOrderHistoryResponse searchEbookNaverOrderHistory(
+            String paymentId,
+            SearchNaverOrderHistoryDto searchHistory
     ) {
-        HttpHeaders headers = getHeaders();
 
-        HttpEntity<SearchNaverOrderHistoryDto> requestEntity = new HttpEntity<>(searchHistory, headers);
+        Mono<SearchNaverOrderHistoryResponse> responseMono = webClient.post()
+                .uri(properties.getNaverUrl().getBaseUrl() + "/" +
+                        properties.getNaverClient().getPartnerId() + "/" +
+                        properties.getNaverUrl().getHistoryUrl() + "/" + paymentId)
+                .headers(header -> header.addAll(getHeaders()))
+                .bodyValue(searchHistory)
+                .retrieve()
+                .bodyToMono(SearchNaverOrderHistoryResponse.class);
 
-        ResponseEntity<SearchNaverEbookOrderHistoryResponse> response = new RestTemplate().postForEntity(
-                properties.getBaseUrl() + "/" + properties.getPartnerId() + "naverpay/payments/v2.2/list/history/" + paymentId,
-                requestEntity,
-                SearchNaverEbookOrderHistoryResponse.class
-        );
-
-        return response.getBody();
+        return responseMono.blockOptional().orElseThrow(() -> new PaymentException(""));
     }
 
     private HttpHeaders getHeaders() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(APPLICATION_FORM_URLENCODED);
-        headers.set("X-Naver-Client-Id", properties.getClientId());
-        headers.set("X-NaverPay-Chain-Id", properties.getChainId());
-        headers.set("X-NaverPay-Idempotency-Key", UUID.randomUUID().toString());
+        headers.set(properties.getNaverHeader().getClientId(),
+                properties.getNaverClient().getClientId());
+        headers.set(properties.getNaverHeader().getChainId(),
+                properties.getNaverClient().getChainId());
+        headers.set(properties.getNaverHeader().getIdempotencyKey(),
+                UUID.randomUUID().toString());
         return headers;
     }
 }

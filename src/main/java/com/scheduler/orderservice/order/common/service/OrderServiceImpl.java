@@ -23,7 +23,7 @@ import static com.scheduler.orderservice.order.common.domain.OrderType.DIRECT;
 import static com.scheduler.orderservice.order.common.domain.Vendor.*;
 import static com.scheduler.orderservice.order.common.dto.OrderDto.*;
 import static com.scheduler.orderservice.order.common.dto.OrderResponseList.OrderResponse;
-import static com.scheduler.orderservice.order.payment.kakao.dto.KakaoPayRequest.KakaoEbookPreOrderResponse;
+import static com.scheduler.orderservice.order.payment.kakao.dto.KakaoPayRequest.KakaoPreOrderResponse;
 import static com.scheduler.orderservice.order.payment.kakao.dto.KakaoPayRequest.KakaoPreOrderRequest;
 import static com.scheduler.orderservice.order.payment.naver.dto.NaverPayRequest.NaverCreateOrderRequest;
 import static com.scheduler.orderservice.order.payment.nicepay.dto.NicePayResponse.NicePayPreOrderResponse;
@@ -100,7 +100,7 @@ public class OrderServiceImpl implements com.scheduler.orderservice.order.common
                         .orderCategory(orderCategory)
                         .build();
 
-                KakaoEbookPreOrderResponse kakaoEbookPreOrder = kakaoOrderService.kakaoEbookPreOrder(accessToken, kakaoPreOrderRequest);
+                KakaoPreOrderResponse kakaoEbookPreOrder = kakaoOrderService.kakaoPreOrder(accessToken, kakaoPreOrderRequest);
 
                 if(orderCategory.equals(PRODUCT)) {
 
@@ -110,7 +110,7 @@ public class OrderServiceImpl implements com.scheduler.orderservice.order.common
             }
 
             case NAVER -> {
-                String vendorReturnUrl = naverProperties.getReturnUrl();
+                String vendorReturnUrl = naverProperties.getNaverUrl().getBaseUrl();
                 String orderReturnUri = "/order/ebook/naver/pay";
                 String orderTypePath = orderType.toString().toLowerCase();
                 String orderCategoryIdPath = orderCategory.toString().toLowerCase();
@@ -140,7 +140,7 @@ public class OrderServiceImpl implements com.scheduler.orderservice.order.common
             }
 
             case NICEPAY -> {
-                String vendorReturnUrl = nicePayProperties.getReturnUrl();
+                String vendorReturnUrl = nicePayProperties.getNiceUrl().getBaseUrl();
                 String orderReturnUri = "order/ebook/nicepay/pay";
                 String orderTypePath = orderType.toString().toLowerCase();
                 String orderCategoryIdPath = orderCategory.toString().toLowerCase();

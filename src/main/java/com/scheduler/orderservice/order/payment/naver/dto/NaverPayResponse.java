@@ -77,7 +77,7 @@ public class NaverPayResponse {
 
     @Getter
     @Setter
-    public static class SearchNaverEbookOrderHistoryResponse {
+    public static class SearchNaverOrderHistoryResponse {
         private String code;
         private String message;
         private Body body;
@@ -153,7 +153,7 @@ public class NaverPayResponse {
     @Getter
     @Setter
     @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-    public static class CancelNaverEbookDto {
+    public static class CancelNaverDto {
         private String paymentId;
         private Integer cancelAmount;
         private String cancelReason;

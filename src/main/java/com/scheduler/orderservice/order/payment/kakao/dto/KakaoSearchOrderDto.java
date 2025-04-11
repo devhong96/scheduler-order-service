@@ -19,7 +19,7 @@ public class KakaoSearchOrderDto {
     @Getter
     @Setter
     @ToString
-    public static class KakaoEbookSearchOrderResponse {
+    public static class KakaoSearchOrderResponse {
 
         private String tid;
         private String cid;
