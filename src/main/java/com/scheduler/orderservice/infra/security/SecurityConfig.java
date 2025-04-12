@@ -28,17 +28,7 @@ public class SecurityConfig {
     }
 
     public static final String[] ENDPOINTS_WHITELISTS = {
-            "/swagger-resources/**",
-            "/v3/api-docs/**",
-            "/swagger-ui/**",
-            "/order-api/**",
-
-            "/order/**",
-
-            "/feign-course-order/**",
-            "/feign-member-order/**",
-
-            "/actuator/**"
+            "/**"
     };
 
     @Bean

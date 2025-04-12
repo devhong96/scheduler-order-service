@@ -85,8 +85,8 @@ public class KakaoOrderServiceImpl implements KakaoOrderService {
                 .taxFreeAmount(kakaoPreOrderRequest.getTaxFreeAmount())
                 .vatAmount(kakaoPreOrderRequest.getVatAmount())
                 .approvalUrl(vendorReturnUrl + "/" + orderReturnUri + "/" + orderType.toString().toLowerCase() + "/" + orderCategoryIdPath + "/" + orderId)
-                .cancelUrl(kakaoProperties.getKakaoUrl().getCancelUrl() + "/order/kakao/pay/cancel")
-                .failUrl(kakaoProperties.getKakaoUrl().getBaseUrl() + "/order/kakao/pay/fail")
+                .cancelUrl(vendorReturnUrl + "/order/kakao/pay/cancel")
+                .failUrl(vendorReturnUrl + "/order/kakao/pay/fail")
                 .build();
 
 

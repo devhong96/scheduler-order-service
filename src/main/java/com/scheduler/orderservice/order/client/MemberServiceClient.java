@@ -9,31 +9,31 @@ import static com.scheduler.orderservice.order.client.dto.OrderDto.*;
 import static org.springframework.cloud.config.client.ConfigClientProperties.AUTHORIZATION;
 
 @FeignClient(
-        name = "scheduler-order-service",
-        url =  "${scheduler_order_service_url:}",
-        path = "/feign-order",
+        name = "scheduler-member-service",
+        url =  "${scheduler_member_service_url:}",
+        path = "/feign-member",
         configuration = OrderFeignErrorDecoder.class
 )
 public interface MemberServiceClient {
 
-    @GetMapping("feign-order-member/student")
+    @GetMapping("student/info")
     StudentResponse getStudentInfo(@RequestHeader(AUTHORIZATION) String accessToken);
 
-    @GetMapping("feign-order-member/student/{username}")
-    StudentResponse findReaderByUsername(@PathVariable String username);
+    @GetMapping("student/{username}")
+    StudentResponse findStudentByUsername(@PathVariable String username);
 
     //
-    @PostMapping("feign-order-member/student/kakao")
+    @PostMapping("student/kakao")
     void createKakaoDirectOrder(@RequestBody CreateKakaoDirectOrderDto createKakaoDirectOrderDto);
 
-    @PostMapping("feign-order-member/student/naver")
+    @PostMapping("student/naver")
     void createNaverDirectOrder(@RequestBody CreateNaverDirectOrderDto createNaverDirectOrderDto);
 
-    @PostMapping("feign-order-member/student/nicepay")
+    @PostMapping("student/nicepay")
     void createNicePayDirectOrder(@RequestBody CreateNicePayDirectOrderDto createNicePayDirectOrderDto);
 
 
-    @GetMapping("feign-order-member/student/{readerId}/{orderId}/{ebookId}")
+    @GetMapping("student/{readerId}/{orderId}/{ebookId}")
     CancelOrderInfoResponse findPreCancelOrderInfo(
             @PathVariable String readerId,
             @PathVariable String orderId,

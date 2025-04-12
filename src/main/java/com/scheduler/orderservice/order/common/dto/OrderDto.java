@@ -15,7 +15,7 @@ public class OrderDto {
 
     @Getter
     @Setter
-    public static class OrderRequest {
+    public static class PreOrderRequest {
 
         private String productName;
 
@@ -46,8 +46,6 @@ public class OrderDto {
         private String productCoverUrl;
 
         private Integer count;
-
-        private Integer donationAmount;
     }
 
 

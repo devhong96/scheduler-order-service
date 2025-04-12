@@ -27,7 +27,7 @@ public class KakaoPayRequest {
         private String itemName;
         private String itemCode;
 
-        private String ebookCoverUrl;
+        private String productCoverUrl;
 
         private Integer quantity;
 
@@ -45,14 +45,14 @@ public class KakaoPayRequest {
 
         @Builder
         public KakaoPreOrderRequest(String partnerOrderId,
-                                    String itemName, String itemCode, String ebookCoverUrl, Integer quantity,
+                                    String itemName, String itemCode, String productCoverUrl, Integer quantity,
                                     Integer totalAmount, Integer vatAmount, Integer taxFreeAmount,
                                     Integer donationAmount, OrderType orderType,
                                     OrderCategory orderCategory) {
             this.partnerOrderId = partnerOrderId;
             this.itemName = itemName;
             this.itemCode = itemCode;
-            this.ebookCoverUrl = ebookCoverUrl;
+            this.productCoverUrl = productCoverUrl;
             this.quantity = quantity;
             this.totalAmount = totalAmount;
             this.vatAmount = vatAmount;

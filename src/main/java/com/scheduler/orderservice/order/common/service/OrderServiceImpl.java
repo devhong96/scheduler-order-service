@@ -43,34 +43,30 @@ public class OrderServiceImpl implements com.scheduler.orderservice.order.common
     public OrderResponse createOrder(
             String accessToken,
             OrderType orderType, Vendor vendor, OrderCategory orderCategory,
-            OrderRequest orderRequest
+            PreOrderRequest preOrderRequest
     ) {
 
-        List<ProductItems> productItems = orderRequest.getProductItems();
+        List<ProductItems> productItems = preOrderRequest.getProductItems();
 
         List<String> ebookIds = productItems.stream()
                 .map(ProductItems::getUid)
                 .toList();
 
-        int totalQuantity = orderRequest.getQuantity();
+        int totalQuantity = preOrderRequest.getQuantity();
 
         String orderId = "O" + LocalDateTime.now()
                 .format(DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS"));
 
-        String ebookId = productItems.get(0).getUid();
+        String productId = productItems.get(0).getUid();
 
-        String ebookCoverUrl = "";
+        String productCoverUrl = "";
 
-        String ebookName = orderRequest.getProductName();
+        String productName = preOrderRequest.getProductName();
 
         int eachCount = ebookIds.size();
 
         //
-        int amountSum = orderRequest.getPrice();
-
-        int donationAmountSum = productItems.stream()
-                .mapToInt(ProductItems::getDonationAmount)
-                .sum();
+        int amountSum = preOrderRequest.getPrice();
 
         int vatRate = 10;
 
@@ -80,22 +76,21 @@ public class OrderServiceImpl implements com.scheduler.orderservice.order.common
 
             case KAKAO -> {
 
-                String itemName = ebookName;
+                String itemName = productName;
 
                 if (eachCount > 1) {
-                    itemName = ebookName + "외" + (eachCount - 1) + "개";
+                    itemName = productName + "외" + (eachCount - 1) + "개";
                 }
 
                 KakaoPreOrderRequest kakaoPreOrderRequest = KakaoPreOrderRequest.builder()
                         .partnerOrderId(orderId)
-                        .itemCode(ebookId)
+                        .itemCode(productId)
                         .itemName(itemName)
-                        .ebookCoverUrl(ebookCoverUrl)
+                        .productCoverUrl(productCoverUrl)
                         .quantity(totalQuantity)
                         .totalAmount(amountSum)
                         .vatAmount(vatAmount)
                         .taxFreeAmount(0)
-                        .donationAmount(donationAmountSum)
                         .orderType(orderType)
                         .orderCategory(orderCategory)
                         .build();
@@ -116,14 +111,14 @@ public class OrderServiceImpl implements com.scheduler.orderservice.order.common
                 String orderCategoryIdPath = orderCategory.toString().toLowerCase();
 
                 if(orderType.equals(DIRECT)) {
-                    redisOrderCache.saveDirectOrderInfo(orderId, new DirectOrderDto(accessToken, ebookId, 1));
+                    redisOrderCache.saveDirectOrderInfo(orderId, new DirectOrderDto(accessToken, productId, 1));
                 }
 
                 String returnUrl = Path.of(vendorReturnUrl, orderReturnUri, orderTypePath, orderCategoryIdPath).toString();
 
                 NaverCreateOrderRequest naverCreateOrderRequest = NaverCreateOrderRequest.builder()
                         .merchantPayKey(orderId)
-                        .productName(ebookName)
+                        .productName(productName)
                         .productCount(totalQuantity)
                         .totalPayAmount(amountSum)
                         .taxScopeAmount(vatAmount)
@@ -132,7 +127,7 @@ public class OrderServiceImpl implements com.scheduler.orderservice.order.common
                         .build();
 
                 if(orderCategory.equals(PRODUCT)) {
-                    GiftOrderInfoRequest giftOrderInfoRequest = orderRequest.getGiftOrderInfoRequest();
+                    GiftOrderInfoRequest giftOrderInfoRequest = preOrderRequest.getGiftOrderInfoRequest();
 
                 }
                 
@@ -154,12 +149,12 @@ public class OrderServiceImpl implements com.scheduler.orderservice.order.common
                 NicePayPreOrderResponse nicePayPreOrderResponse = NicePayPreOrderResponse.builder()
                         .orderId(orderId)
                         .amount(amountSum)
-                        .goodsName(ebookName)
+                        .goodsName(productName)
                         .returnUrl(returnUrl)
                         .build();
 
                 if(orderCategory.equals(PRODUCT)) {
-                    GiftOrderInfoRequest giftOrderInfoRequest = orderRequest.getGiftOrderInfoRequest();
+                    GiftOrderInfoRequest giftOrderInfoRequest = preOrderRequest.getGiftOrderInfoRequest();
 
                 }
 

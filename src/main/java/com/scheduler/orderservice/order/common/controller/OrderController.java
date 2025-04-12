@@ -3,7 +3,6 @@ package com.scheduler.orderservice.order.common.controller;
 import com.scheduler.orderservice.order.common.domain.OrderCategory;
 import com.scheduler.orderservice.order.common.domain.OrderType;
 import com.scheduler.orderservice.order.common.domain.Vendor;
-import com.scheduler.orderservice.order.common.dto.OrderDto;
 import com.scheduler.orderservice.order.common.service.OrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -12,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import static com.scheduler.orderservice.order.common.dto.OrderDto.*;
 import static com.scheduler.orderservice.order.common.dto.OrderResponseList.OrderResponse;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.OK;
@@ -31,11 +31,11 @@ public class OrderController {
             @PathVariable("orderType") String orderType,
             @PathVariable("orderCategory") String orderCategory,
             @PathVariable("vendor") String vendor,
-            @Valid @RequestBody OrderDto.OrderRequest ebookPreOrderRequest
+            @Valid @RequestBody PreOrderRequest preOrderRequest
     ) {
         return new ResponseEntity<>(orderService.createOrder(
                 accessToken,
                 OrderType.fromString(orderType), Vendor.fromString(vendor), OrderCategory.fromString(orderCategory),
-                ebookPreOrderRequest), OK);
+                preOrderRequest), OK);
     }
 }
