@@ -11,6 +11,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.expression.WebExpressionAuthorizationManager;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
@@ -27,8 +28,19 @@ public class SecurityConfig {
         return configuration.getAuthenticationManager();
     }
 
+    public static final String[] INTERNAL_ENDPOINTS = {
+            "/feign-member/**",
+            "/feign-course/**"
+    };
+
+    public static final String[] AUTHORIZED_ENDPOINTS = {
+            "/manage/*", "/order/**"
+    };
+
     public static final String[] ENDPOINTS_WHITELISTS = {
-            "/**"
+
+            "/order-api/**",
+            "/actuator/**",
     };
 
     @Bean
@@ -41,10 +53,14 @@ public class SecurityConfig {
                 .addFilterAt(new JwtAuthFilter(jwtUtils), BasicAuthenticationFilter.class)
                 .authorizeHttpRequests(
         auth -> auth
-                .requestMatchers(ENDPOINTS_WHITELISTS)
-                .permitAll()
-                .anyRequest().authenticated()
+                .requestMatchers(INTERNAL_ENDPOINTS)
+                .access(
+                        new WebExpressionAuthorizationManager(
+                                "hasIpAddress('127.0.0.1') or hasIpAddress('172.18.0.0/16')")
                 )
+                .requestMatchers(AUTHORIZED_ENDPOINTS).hasAnyAuthority("ADMIN", "TEACHER","STUDENT")
+                .requestMatchers(ENDPOINTS_WHITELISTS).permitAll()
+                .anyRequest().authenticated())
                 .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(STATELESS));
 
         return httpSecurity.build();
