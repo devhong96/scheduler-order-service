@@ -65,7 +65,7 @@ kakao :
     cid : "TC0ONETIME"
     #   가맹점 회원 id
     partner_user_id : "partner_user_id"
-    secret-key : '{cipher}AQB95NMfGJVzVOcQNuiO9Ute1ag7Krewr3db4I+tf3ez7fdYYh9+XcotvjXFoCDADNygVrdDGH9oH1XM0Aw12IOSZL1GSPHNNdFfTD0N5zE7fX5stlPK1b8QPx8zIJt3iJlvmQAEH+e0ivnX3V/5EdCsHVPawMuVn6Nb7F+F8ATPKz7OlmLDXb8z2+Ss9eTatCBhhJReu+GJK65/sJhNb4mfFPHNeiY/IyuPViXn6+4S6bXQbUWtjY5mQWzDcZKOSqim3SpV/eP7G7r6n2czdDWCHc1R5fxqbC3XhiL3xTVWNeQsddIqfwwvx9HSSgd2NQwbbtCB4nDSKH/0kPaa54U6QaOhS0InYt8RcFj4Mh6k6+6aqKBtLK0veiZZ3ZVA18PG/xifeHUtRveUJf24p7cIqV9TDwM89sA4Gof3m1n+gg=='
+    secret-key : "DEVD8AC3102652E8E61F9ED9847C85036F648A19"
 
 naver :
   naver-header:

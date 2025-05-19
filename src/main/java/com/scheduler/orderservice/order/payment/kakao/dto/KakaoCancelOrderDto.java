@@ -17,11 +17,11 @@ public class KakaoCancelOrderDto {
 
         private String refundReason;
 
-        private List<SingleEbookCancelOrder> singleEbookCancelOrders = new ArrayList<>();
+        private List<SingleCancelOrder> singleCancelOrders = new ArrayList<>();
 
         @Getter
         @Setter
-        public static class SingleEbookCancelOrder {
+        public static class SingleCancelOrder {
             private String orderId;
             private String ebookId;
         }
@@ -33,7 +33,7 @@ public class KakaoCancelOrderDto {
     @Builder
     @AllArgsConstructor(access = PROTECTED)
     @JsonNaming(SnakeCaseStrategy.class)
-    public static class EbookCancelOrderRequest {
+    public static class CancelOrderRequest {
 
         private String cid;                     // 가맹점 코드
         private String tid;                     // 결제 고유 번호

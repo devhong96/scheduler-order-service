@@ -31,7 +31,7 @@ import static com.scheduler.orderservice.order.payment.nicepay.dto.NicePayRespon
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class OrderServiceImpl implements com.scheduler.orderservice.order.common.service.OrderService {
+public class OrderServiceImpl implements OrderService {
 
     private final NaverProperties naverProperties;
     private final NicePayProperties nicePayProperties;
@@ -48,7 +48,7 @@ public class OrderServiceImpl implements com.scheduler.orderservice.order.common
 
         List<ProductItems> productItems = preOrderRequest.getProductItems();
 
-        List<String> ebookIds = productItems.stream()
+        List<String> product = productItems.stream()
                 .map(ProductItems::getUid)
                 .toList();
 
@@ -63,7 +63,7 @@ public class OrderServiceImpl implements com.scheduler.orderservice.order.common
 
         String productName = preOrderRequest.getProductName();
 
-        int eachCount = ebookIds.size();
+        int eachCount = product.size();
 
         //
         int amountSum = preOrderRequest.getPrice();
@@ -95,13 +95,13 @@ public class OrderServiceImpl implements com.scheduler.orderservice.order.common
                         .orderCategory(orderCategory)
                         .build();
 
-                KakaoPreOrderResponse kakaoEbookPreOrder = kakaoOrderService.kakaoPreOrder(accessToken, kakaoPreOrderRequest);
+                KakaoPreOrderResponse kakaoPreOrder = kakaoOrderService.kakaoPreOrder(accessToken, kakaoPreOrderRequest);
 
                 if(orderCategory.equals(PRODUCT)) {
 
                 }
 
-                return new OrderResponse(KAKAO, kakaoEbookPreOrder);
+                return new OrderResponse(KAKAO, kakaoPreOrder);
             }
 
             case NAVER -> {

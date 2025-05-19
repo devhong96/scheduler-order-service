@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
@@ -100,25 +99,23 @@ public class NaverOrderServiceImpl implements NaverOrderService {
         return responseMono.blockOptional().orElseThrow(() -> new PaymentException(""));
     }
 
-
-    @Deprecated
-    public void cancelNaverOrder(CancelNaverDto cancelNaverDto) {
+    public Mono<NaverPreOrderResponse> cancelNaverOrder(CancelNaverDto cancelNaverDto) {
 
         HttpHeaders headers = getHeaders();
 
         HttpEntity<CancelNaverDto> requestEntity = new HttpEntity<>(cancelNaverDto, headers);
 
-        new RestTemplate().postForEntity(
-                properties.getNaverUrl().getBaseUrl() + "/" +
+        return webClient.post()
+                .uri(properties.getNaverUrl().getBaseUrl() + "/" +
                         properties.getNaverClient().getClientId() +
-                        properties.getNaverUrl().getCancelUrl(),
-                requestEntity,
-                NaverPreOrderResponse.class
-        );
+                        properties.getNaverUrl().getCancelUrl())
+                .headers(header -> header.addAll(getHeaders()))
+                .bodyValue(requestEntity)
+                .retrieve()
+                .bodyToMono(NaverPreOrderResponse.class);
     }
 
-    @Deprecated
-    public SearchNaverOrderHistoryResponse searchEbookNaverOrderHistory(
+    public SearchNaverOrderHistoryResponse searchNaverOrderHistory(
             String paymentId,
             SearchNaverOrderHistoryDto searchHistory
     ) {

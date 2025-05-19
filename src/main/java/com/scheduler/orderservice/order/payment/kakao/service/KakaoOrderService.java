@@ -1,5 +1,4 @@
 package com.scheduler.orderservice.order.payment.kakao.service;
-
 import com.scheduler.orderservice.order.common.domain.OrderCategory;
 import com.scheduler.orderservice.order.common.domain.OrderType;
 

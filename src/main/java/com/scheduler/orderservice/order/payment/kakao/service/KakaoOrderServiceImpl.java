@@ -27,7 +27,7 @@ import static com.scheduler.orderservice.order.client.dto.MemberFeignDto.Student
 import static com.scheduler.orderservice.order.client.dto.OrderDto.CancelOrderInfoResponse;
 import static com.scheduler.orderservice.order.common.domain.OrderType.DIRECT;
 import static com.scheduler.orderservice.order.payment.kakao.dto.KakaoCancelOrderDto.*;
-import static com.scheduler.orderservice.order.payment.kakao.dto.KakaoCancelOrderDto.CancelOrderPreRequest.SingleEbookCancelOrder;
+import static com.scheduler.orderservice.order.payment.kakao.dto.KakaoCancelOrderDto.CancelOrderPreRequest.SingleCancelOrder;
 import static com.scheduler.orderservice.order.payment.kakao.dto.KakaoPayRequest.*;
 import static com.scheduler.orderservice.order.payment.kakao.dto.KakaoSearchOrderDto.KakaoSearchOrderResponse;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
@@ -152,7 +152,7 @@ public class KakaoOrderServiceImpl implements KakaoOrderService {
         String username = readerInfo.getUsername();
         String readerId = readerInfo.getStudentId();
 
-        List<SingleEbookCancelOrder> singleEbookCancelOrders = preRequest.getSingleEbookCancelOrders();
+        List<SingleCancelOrder> singleCancelOrders = preRequest.getSingleCancelOrders();
         String refundReason = preRequest.getRefundReason();
 
         String vendorTid = "";
@@ -160,10 +160,10 @@ public class KakaoOrderServiceImpl implements KakaoOrderService {
 
         List<CancelOrderInfoResponse> ebookOrderList = new ArrayList<>();
 
-        for(SingleEbookCancelOrder singleEbookCancelOrder : singleEbookCancelOrders) {
+        for(SingleCancelOrder singleCancelOrder : singleCancelOrders) {
 
-            String orderId = singleEbookCancelOrder.getOrderId();
-            String ebookId = singleEbookCancelOrder.getEbookId();
+            String orderId = singleCancelOrder.getOrderId();
+            String ebookId = singleCancelOrder.getEbookId();
 
             CancelOrderInfoResponse preCancelOrderInfoResponse = memberServiceClient.findPreCancelOrderInfo(readerId, orderId, ebookId);
 
@@ -173,7 +173,7 @@ public class KakaoOrderServiceImpl implements KakaoOrderService {
             cancelAmount += preCancelOrderInfoResponse.getCancelAmount();
         }
 
-        EbookCancelOrderRequest ebookCancelOrderRequest = EbookCancelOrderRequest.builder()
+        CancelOrderRequest cancelOrderRequest = CancelOrderRequest.builder()
                 .cid(kakaoProperties.getKakaoClient().getCid())
                 .tid(vendorTid)
                 .cancelAmount(cancelAmount)
@@ -182,7 +182,7 @@ public class KakaoOrderServiceImpl implements KakaoOrderService {
                 .cancelAvailableAmount(cancelAmount)
                 .build();
 
-        CancelOrderResponse cancelOrderResponse = cancelEbookKakaoOrder(ebookCancelOrderRequest);
+        CancelOrderResponse cancelOrderResponse = cancelKakaoOrder(cancelOrderRequest);
 
         //주문 취소
         eventPublisher.publishEvent(new CancelOrderEvent(this, readerId, username, refundReason,
@@ -190,7 +190,7 @@ public class KakaoOrderServiceImpl implements KakaoOrderService {
     }
 
 
-    public CancelOrderResponse cancelEbookKakaoOrder(EbookCancelOrderRequest cancelOrderRequest) {
+    public CancelOrderResponse cancelKakaoOrder(CancelOrderRequest cancelOrderRequest) {
 
         String tid = cancelOrderRequest.getTid();
 
