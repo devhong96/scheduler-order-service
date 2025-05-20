@@ -13,5 +13,5 @@ public interface NicePayService {
             OrderType orderType, OrderCategory orderCategory,
             NicePayPreOrderRequest nicePayPreOrderRequest);
 
-    void cancelEbookNicepayOrder(NicePayCancelOrderRequest nicePayCancelOrderRequest);
+    void cancelNicepayOrder(NicePayCancelOrderRequest nicePayCancelOrderRequest);
 }

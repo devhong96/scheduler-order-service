@@ -23,7 +23,7 @@ public class KakaoCancelOrderDto {
         @Setter
         public static class SingleCancelOrder {
             private String orderId;
-            private String ebookId;
+            private String productId;
         }
     }
 

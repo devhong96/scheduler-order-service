@@ -21,26 +21,26 @@ public class OrderDto {
     @Setter
     public static class CartOrderListDto {
         private String username;
-        private List<EbookCartOrderRequest> ebookOrderInfoList;
+        private List<CartOrderRequest> orderInfoList;
 
-        public CartOrderListDto(String username, List<EbookCartOrderRequest> ebookOrderInfoList) {
+        public CartOrderListDto(String username, List<CartOrderRequest> orderInfoList) {
             this.username = username;
-            this.ebookOrderInfoList = ebookOrderInfoList;
+            this.orderInfoList = orderInfoList;
         }
     }
 
     @Getter
     @Setter
-    public static class EbookCartOrderRequest {
+    public static class CartOrderRequest {
 
-        private String ebookOrderId;
+        private String orderId;
 
         private String vendorTid;
 
         @Enumerated(STRING)
         private OrderCategory orderCategory;
 
-        private SingleEbookCartResponse singleEbookCartResponse;
+        private SingleCartResponse singleCartResponse;
 
         private String paymentMethod;
 
@@ -52,17 +52,17 @@ public class OrderDto {
 
     @Getter
     @Setter
-    public static class SingleEbookCartResponse {
+    public static class SingleCartResponse {
 
         private String cartId;
 
         private String studentId;
 
-        private String ebookId;
+        private String productId;
 
-        private String ebookName;
+        private String productName;
 
-        private String ebookCoverUrl;
+        private String coverUrl;
 
         private String authorName;
 
@@ -139,8 +139,8 @@ public class OrderDto {
         @Enumerated(STRING)
         private Vendor vendor;
         private String vendorTid;
-        private String ebookId;
-        private String ebookName;
+        private String productId;
+        private String productName;
         private Integer cancelAmount;
     }
 }

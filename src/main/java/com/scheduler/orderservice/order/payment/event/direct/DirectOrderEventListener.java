@@ -59,7 +59,7 @@ public class DirectOrderEventListener {
 
     @Async
     @TransactionalEventListener(phase = AFTER_COMMIT)
-    public void handleNicePayEbookDirectOrderEventListener(NicePayDirectOrderEvent event) {
+    public void handleNicePayDirectOrderEventListener(NicePayDirectOrderEvent event) {
 
         String studentId = event.getStudentId();
         String username = event.getUsername();

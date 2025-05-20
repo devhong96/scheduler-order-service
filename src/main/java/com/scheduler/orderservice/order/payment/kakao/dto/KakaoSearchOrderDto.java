@@ -10,7 +10,7 @@ public class KakaoSearchOrderDto {
     @Getter
     @Builder
     @AllArgsConstructor
-    public static class KakaoEbookCancelOrderInfo {
+    public static class KakaoCancelOrderInfo {
 
         private String cid; // 가맹점 코드
         private String tid; // 결제 고유번호, 20자

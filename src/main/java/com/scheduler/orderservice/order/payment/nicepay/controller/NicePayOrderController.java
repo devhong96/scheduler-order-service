@@ -38,7 +38,7 @@ public class NicePayOrderController {
     @Operation(summary = " 페이. 바로 결제, 장바구니 결제 포함. 프론트 사용 X")
     @PostMapping("cancel")
     public ResponseEntity<Void> cancelNicePayOrder(NicePayCancelOrderRequest nicePayCancelOrderRequest) {
-        nicePayService.cancelEbookNicepayOrder(nicePayCancelOrderRequest);
+        nicePayService.cancelNicepayOrder(nicePayCancelOrderRequest);
         return new ResponseEntity<>(OK);
     }
 }

@@ -17,17 +17,17 @@ public class CancelOrderEvent extends ApplicationEvent {
 
     private final String cancelReason;
 
-    private final List<CancelOrderInfoResponse> ebookOrderList;
+    private final List<CancelOrderInfoResponse> orderList;
 
     private final CancelOrderResponse cancelOrderResponse;
 
     public CancelOrderEvent(Object source, String studentId, String username, String cancelReason,
-                            List<CancelOrderInfoResponse> ebookOrderList, CancelOrderResponse cancelOrderResponse) {
+                            List<CancelOrderInfoResponse> orderList, CancelOrderResponse cancelOrderResponse) {
         super(source);
         this.studentId = studentId;
         this.username = username;
         this.cancelReason = cancelReason;
-        this.ebookOrderList = ebookOrderList;
+        this.orderList = orderList;
         this.cancelOrderResponse = cancelOrderResponse;
     }
 }

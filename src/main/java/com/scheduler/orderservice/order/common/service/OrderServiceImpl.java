@@ -106,7 +106,7 @@ public class OrderServiceImpl implements OrderService {
 
             case NAVER -> {
                 String vendorReturnUrl = naverProperties.getNaverUrl().getBaseUrl();
-                String orderReturnUri = "/order/ebook/naver/pay";
+                String orderReturnUri = "/order/naver/pay";
                 String orderTypePath = orderType.toString().toLowerCase();
                 String orderCategoryIdPath = orderCategory.toString().toLowerCase();
 
@@ -136,7 +136,7 @@ public class OrderServiceImpl implements OrderService {
 
             case NICEPAY -> {
                 String vendorReturnUrl = nicePayProperties.getNiceUrl().getBaseUrl();
-                String orderReturnUri = "order/ebook/nicepay/pay";
+                String orderReturnUri = "order/nicepay/pay";
                 String orderTypePath = orderType.toString().toLowerCase();
                 String orderCategoryIdPath = orderCategory.toString().toLowerCase();
 

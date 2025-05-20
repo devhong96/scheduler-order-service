@@ -55,7 +55,7 @@ public class NicePayServiceImpl implements NicePayService {
         String readerId = readerInfo.getStudentId();
         String username = readerInfo.getUsername();
 
-        NicePayOrderResponse response = getNicePayEbookOrderResponse(niceRequest);
+        NicePayOrderResponse response = getNicePayOrderResponse(niceRequest);
 
         switch (orderType) {
 
@@ -74,7 +74,7 @@ public class NicePayServiceImpl implements NicePayService {
         }
     }
 
-    private NicePayOrderResponse getNicePayEbookOrderResponse(NicePayPreOrderRequest nicePayPreOrderRequest) {
+    private NicePayOrderResponse getNicePayOrderResponse(NicePayPreOrderRequest nicePayPreOrderRequest) {
 
         String tid = nicePayPreOrderRequest.getTid();
 
@@ -116,7 +116,7 @@ public class NicePayServiceImpl implements NicePayService {
             throw new NicePayOrderException();
     }
 
-    public void cancelEbookNicepayOrder(NicePayCancelOrderRequest nicePayCancelOrderRequest) {
+    public void cancelNicepayOrder(NicePayCancelOrderRequest nicePayCancelOrderRequest) {
 
         String cancelAmt = nicePayCancelOrderRequest.getCancelAmt();
         String reason = nicePayCancelOrderRequest.getReason();

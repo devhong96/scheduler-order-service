@@ -26,7 +26,7 @@ public class OrderController {
 
     @Operation(summary = "주문 결제 버튼", description = "결제에 필요한 정보를 포함해서 반환")
     @PostMapping("{orderType}/{orderCategory}/{vendor}")
-    public ResponseEntity<OrderResponse> directOrderEbook(
+    public ResponseEntity<OrderResponse> directOrder(
             @RequestHeader(AUTHORIZATION) String accessToken,
             @PathVariable("orderType") String orderType,
             @PathVariable("orderCategory") String orderCategory,
