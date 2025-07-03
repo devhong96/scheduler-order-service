@@ -163,7 +163,7 @@ public class KakaoOrderServiceImpl implements KakaoOrderService {
         for(SingleCancelOrder singleCancelOrder : singleCancelOrders) {
 
             String orderId = singleCancelOrder.getOrderId();
-            String ebookId = singleCancelOrder.getEbookId();
+            String ebookId = singleCancelOrder.getProductId();
 
             CancelOrderInfoResponse preCancelOrderInfoResponse = memberServiceClient.findPreCancelOrderInfo(readerId, orderId, ebookId);
 
