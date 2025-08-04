@@ -35,7 +35,7 @@ public class OrderController {
     ) {
         return new ResponseEntity<>(orderService.createOrder(
                 accessToken,
-                OrderType.fromString(orderType), Vendor.fromString(vendor), OrderCategory.fromString(orderCategory),
+                OrderType.fromString(orderType), OrderCategory.fromString(orderCategory), Vendor.fromString(vendor),
                 preOrderRequest), OK);
     }
 }

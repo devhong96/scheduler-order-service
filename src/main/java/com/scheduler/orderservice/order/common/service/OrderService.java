@@ -11,6 +11,6 @@ public interface OrderService {
 
     OrderResponse createOrder(
             String accessToken,
-            OrderType orderType, Vendor vendor, OrderCategory orderCategory,
-            PreOrderRequest ebookPrePreOrderRequest);
+            OrderType orderType, OrderCategory orderCategory, Vendor vendor,
+            PreOrderRequest preOrderRequest);
 }

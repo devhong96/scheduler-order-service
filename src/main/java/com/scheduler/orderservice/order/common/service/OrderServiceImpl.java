@@ -42,7 +42,7 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public OrderResponse createOrder(
             String accessToken,
-            OrderType orderType, Vendor vendor, OrderCategory orderCategory,
+            OrderType orderType, OrderCategory orderCategory, Vendor vendor,
             PreOrderRequest preOrderRequest
     ) {
 
