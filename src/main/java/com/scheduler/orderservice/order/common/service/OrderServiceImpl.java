@@ -46,6 +46,8 @@ public class OrderServiceImpl implements OrderService {
             PreOrderRequest preOrderRequest
     ) {
 
+        log.info("test at OrderServiceImpl");
+
         List<ProductItems> productItems = preOrderRequest.getProductItems();
 
         List<String> product = productItems.stream()
