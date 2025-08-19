@@ -1,10 +1,14 @@
 package com.scheduler.orderservice.order.common.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class KakaoDto {
 
     private String accessToken;
@@ -12,10 +16,4 @@ public class KakaoDto {
     private String studentId;
     private long createdAt;
 
-    public KakaoDto(String accessToken, String tid, String studentId, long createdAt) {
-        this.accessToken = accessToken;
-        this.tid = tid;
-        this.studentId = studentId;
-        this.createdAt = createdAt;
-    }
 }

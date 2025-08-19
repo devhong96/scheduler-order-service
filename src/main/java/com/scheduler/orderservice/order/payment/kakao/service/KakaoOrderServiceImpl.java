@@ -54,8 +54,6 @@ public class KakaoOrderServiceImpl implements KakaoOrderService {
 
         String studentId = memberServiceClient.getStudentInfo(accessToken).getStudentId();
 
-        log.info("studentId in order-service = {}", studentId);
-
         String itemCode = kakaoPreOrderRequest.getItemCode();
 
         String orderId = kakaoPreOrderRequest.getPartnerOrderId();
@@ -101,6 +99,7 @@ public class KakaoOrderServiceImpl implements KakaoOrderService {
 
         KakaoPreOrderResponse response = kakaoEbookPreOrderResponseMono.blockOptional()
                 .orElseThrow(() -> new PaymentException("결제 준비 응답이 null 입니다"));
+
         String tid = response.getTid();
         redisOrderCache.saveKakaoOrderInfo(orderId, new KakaoDto(accessToken, tid, studentId, System.currentTimeMillis()));
 
