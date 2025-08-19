@@ -34,11 +34,11 @@ public class SecurityConfig {
     };
 
     public static final String[] AUTHORIZED_ENDPOINTS = {
-            "/manage/*", "/order/**"
+            "/manage/*",
     };
 
     public static final String[] ENDPOINTS_WHITELISTS = {
-
+            "/order/**",
             "/order-api/**",
             "/actuator/**",
     };
@@ -58,7 +58,7 @@ public class SecurityConfig {
                         new WebExpressionAuthorizationManager(
                                 "hasIpAddress('127.0.0.1') or hasIpAddress('172.18.0.0/16')")
                 )
-                .requestMatchers(AUTHORIZED_ENDPOINTS).hasAnyAuthority("ADMIN", "TEACHER","STUDENT")
+                .requestMatchers(AUTHORIZED_ENDPOINTS).hasAnyAuthority("ADMIN", "TEACHER", "STUDENT")
                 .requestMatchers(ENDPOINTS_WHITELISTS).permitAll()
                 .anyRequest().authenticated())
                 .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(STATELESS));
