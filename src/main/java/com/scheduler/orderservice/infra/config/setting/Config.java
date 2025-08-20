@@ -22,7 +22,7 @@ public class Config {
             if (response.statusCode().isError()) {
                 return response.bodyToMono(String.class)
                         .flatMap(errorBody -> {
-                            log.error("KakaoPay API 호출 실패: 상태 코드={}, 오류 메시지={}", response.statusCode(), errorBody);
+                            log.error("결제 API 호출 실패: 상태 코드 = {}, 오류 메시지 = {}", response.statusCode(), errorBody);
                             return Mono.error(new PaymentException("결제 준비 실패: " + errorBody));
                         });
             }

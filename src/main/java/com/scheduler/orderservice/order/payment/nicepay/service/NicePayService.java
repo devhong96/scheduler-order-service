@@ -5,6 +5,7 @@ import com.scheduler.orderservice.order.common.domain.OrderType;
 
 import static com.scheduler.orderservice.order.payment.nicepay.dto.NicePayRequest.NicePayCancelOrderRequest;
 import static com.scheduler.orderservice.order.payment.nicepay.dto.NicePayRequest.NicePayPreOrderRequest;
+import static com.scheduler.orderservice.order.payment.nicepay.dto.NicePayResponse.NicePayCancelOrderResponse;
 
 public interface NicePayService {
 
@@ -13,5 +14,5 @@ public interface NicePayService {
             OrderType orderType, OrderCategory orderCategory,
             NicePayPreOrderRequest nicePayPreOrderRequest);
 
-    void cancelNicepayOrder(NicePayCancelOrderRequest nicePayCancelOrderRequest);
+    NicePayCancelOrderResponse cancelNicepayOrder(NicePayCancelOrderRequest nicePayCancelOrderRequest);
 }

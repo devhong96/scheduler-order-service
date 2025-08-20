@@ -147,11 +147,11 @@ public class KakaoOrderServiceImpl implements KakaoOrderService {
 
     @Override
     @Transactional
-    public void prepareToCancelKakaoOrder(String accessToke, CancelOrderPreRequest preRequest) {
+    public void prepareToCancelKakaoOrder(String accessToken, CancelOrderPreRequest preRequest) {
 
-        StudentResponse readerInfo = memberServiceClient.getStudentInfo(accessToke);
+        StudentResponse readerInfo = memberServiceClient.getStudentInfo(accessToken);
         String username = readerInfo.getUsername();
-        String readerId = readerInfo.getStudentId();
+        String memberId = readerInfo.getStudentId();
 
         List<SingleCancelOrder> singleCancelOrders = preRequest.getSingleCancelOrders();
         String refundReason = preRequest.getRefundReason();
@@ -159,16 +159,16 @@ public class KakaoOrderServiceImpl implements KakaoOrderService {
         String vendorTid = "";
         int cancelAmount = 0;
 
-        List<CancelOrderInfoResponse> ebookOrderList = new ArrayList<>();
+        List<CancelOrderInfoResponse> orderList = new ArrayList<>();
 
         for(SingleCancelOrder singleCancelOrder : singleCancelOrders) {
 
             String orderId = singleCancelOrder.getOrderId();
-            String ebookId = singleCancelOrder.getProductId();
+            String productId = singleCancelOrder.getProductId();
 
-            CancelOrderInfoResponse preCancelOrderInfoResponse = memberServiceClient.findPreCancelOrderInfo(readerId, orderId, ebookId);
+            CancelOrderInfoResponse preCancelOrderInfoResponse = memberServiceClient.findPreCancelOrderInfo(orderId, orderId, productId);
 
-            ebookOrderList.add(preCancelOrderInfoResponse);
+            orderList.add(preCancelOrderInfoResponse);
 
             vendorTid = preCancelOrderInfoResponse.getVendorTid();
             cancelAmount += preCancelOrderInfoResponse.getCancelAmount();
@@ -186,8 +186,8 @@ public class KakaoOrderServiceImpl implements KakaoOrderService {
         CancelOrderResponse cancelOrderResponse = cancelKakaoOrder(cancelOrderRequest);
 
         //주문 취소
-        eventPublisher.publishEvent(new CancelOrderEvent(this, readerId, username, refundReason,
-                ebookOrderList, cancelOrderResponse));
+        eventPublisher.publishEvent(new CancelOrderEvent(this, memberId, username, refundReason,
+                orderList, cancelOrderResponse));
     }
 
 

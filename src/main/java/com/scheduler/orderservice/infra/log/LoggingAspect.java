@@ -15,7 +15,7 @@ import static com.scheduler.orderservice.infra.log.IPLog.getIpAddress;
 @Slf4j
 @Aspect
 @Component
-public class BookLoggingAspect {
+public class LoggingAspect {
 
     @Around("execution(* com.scheduler.orderservice.order.*.*.*.*Controller.*(..))")
     public Object orderController(ProceedingJoinPoint joinPoint) throws Throwable {

@@ -33,11 +33,11 @@ public interface MemberServiceClient {
     void createNicePayDirectOrder(@RequestBody CreateNicePayDirectOrderDto createNicePayDirectOrderDto);
 
 
-    @GetMapping("student/{readerId}/{orderId}/{ebookId}")
+    @GetMapping("student/{readerId}/{orderId}/{productId}")
     CancelOrderInfoResponse findPreCancelOrderInfo(
             @PathVariable String readerId,
             @PathVariable String orderId,
-            @PathVariable String ebookId
+            @PathVariable String productId
     );
 }
 

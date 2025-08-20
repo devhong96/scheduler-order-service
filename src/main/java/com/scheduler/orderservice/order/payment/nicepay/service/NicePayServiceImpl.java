@@ -48,11 +48,11 @@ public class NicePayServiceImpl implements NicePayService {
             NicePayPreOrderRequest niceRequest
     ) {
 
-        validateNicePayOrder(niceRequest);
+//        validateNicePayOrder(niceRequest);
 
         DirectOrderDto directOrder = redisOrderCache.getDirectOrderInfo(orderId);
         StudentResponse readerInfo = memberServiceClient.getStudentInfo(directOrder.getAccessToken());
-        String readerId = readerInfo.getStudentId();
+        String studentId = readerInfo.getStudentId();
         String username = readerInfo.getUsername();
 
         NicePayOrderResponse response = getNicePayOrderResponse(niceRequest);
@@ -63,8 +63,8 @@ public class NicePayServiceImpl implements NicePayService {
 
                 Integer quantity = directOrder.getQuantity();
 
-                eventPublisher.publishEvent(new NicePayDirectOrderEvent(this, readerId, username, quantity, orderCategory, response));
-                eventPublisher.publishEvent(new NicePayDirectAfterOrderEvent(this, readerId, username, orderCategory, response));
+                eventPublisher.publishEvent(new NicePayDirectOrderEvent(this, studentId, username, quantity, orderCategory, response));
+                eventPublisher.publishEvent(new NicePayDirectAfterOrderEvent(this, studentId, username, orderCategory, response));
                 break;
             }
 
@@ -82,7 +82,7 @@ public class NicePayServiceImpl implements NicePayService {
         requestBody.put("amount", nicePayPreOrderRequest.getAmount());
 
         Mono<NicePayOrderResponse> responseMono = webClient.post()
-                .uri(properties.getNiceUrl().getPaymentUrl() + tid)
+                .uri(properties.getNiceUrl().getPaymentUrl() + "/" + tid)
                 .headers(header -> header.addAll(getHeaders()))
                 .bodyValue(requestBody)
                 .retrieve()
@@ -100,7 +100,7 @@ public class NicePayServiceImpl implements NicePayService {
         requestBody.put("amount", amount);
 
         Mono<NicePayCheckAmountResponse> responseMono = webClient.post()
-                .uri(properties.getNiceUrl().getCheckAmountUrl() + tid)
+                .uri(properties.getNiceUrl().getCheckAmountUrl() + "/" + tid)
                 .headers(header -> header.addAll(getHeaders()))
                 .bodyValue(requestBody)
                 .retrieve()
@@ -116,26 +116,31 @@ public class NicePayServiceImpl implements NicePayService {
             throw new NicePayOrderException();
     }
 
-    public void cancelNicepayOrder(NicePayCancelOrderRequest nicePayCancelOrderRequest) {
+    public NicePayCancelOrderResponse cancelNicepayOrder(NicePayCancelOrderRequest nicePayCancelOrderRequest) {
 
-        String cancelAmt = nicePayCancelOrderRequest.getCancelAmt();
-        String reason = nicePayCancelOrderRequest.getReason();
         String tid = nicePayCancelOrderRequest.getTid();
+        String reason = nicePayCancelOrderRequest.getReason();
+        String cancelAmt = nicePayCancelOrderRequest.getCancelAmt();
 
         Map<String, String> requestBody = new HashMap<>();
 
-        requestBody.put("cancelAmt", cancelAmt);
         requestBody.put("orderId", UUID.randomUUID().toString());
         requestBody.put("reason", reason);
+        requestBody.put("cancelAmt", cancelAmt);
+
+        log.info(requestBody.toString());
+        log.info(properties.getNiceUrl().getPaymentUrl());
 
         Mono<NicePayCancelOrderResponse> responseMono = webClient.post()
-                .uri(properties.getNiceUrl().getPaymentUrl() + tid + "/cancel")
+                .uri(properties.getNiceUrl().getPaymentUrl() + "/" + tid + "/cancel")
                 .headers(header -> header.addAll(getHeaders()))
                 .bodyValue(requestBody)
                 .retrieve()
-                .bodyToMono(NicePayCancelOrderResponse.class);
+                .bodyToMono(NicePayCancelOrderResponse.class)
+                .doOnNext(response -> log.info("NicePay API 응답 성공: {}", response))
+                .doOnError(error -> log.error("NicePay API 호출 실패: {}", error.getMessage(), error));
 
-        log.info(responseMono.toString());
+        return responseMono.blockOptional().orElseThrow(PaymentException::new);
     }
 
     private HttpHeaders getHeaders() {

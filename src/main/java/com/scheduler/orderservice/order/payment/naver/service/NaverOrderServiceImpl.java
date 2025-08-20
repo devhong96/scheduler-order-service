@@ -43,8 +43,8 @@ public class NaverOrderServiceImpl implements NaverOrderService {
     @Override
     @Transactional
     public NaverOrderResponse createNaverOrder(
-            String orderId,
             OrderType orderType, OrderCategory orderCategory,
+            String orderId,
             String resultCode, String paymentId
     ) {
 
@@ -94,7 +94,9 @@ public class NaverOrderServiceImpl implements NaverOrderService {
                 .headers(header -> header.addAll(getHeaders()))
                 .bodyValue(body)
                 .retrieve()
-                .bodyToMono(NaverOrderResponse.class);
+                .bodyToMono(NaverOrderResponse.class)
+                .doOnNext(response -> log.info("Naver API 응답 성공: {}", response))
+                .doOnError(error -> log.error("Naver API 호출 실패: {}", error.getMessage(), error));
 
         return responseMono.blockOptional().orElseThrow(() -> new PaymentException(""));
     }
@@ -134,13 +136,18 @@ public class NaverOrderServiceImpl implements NaverOrderService {
 
     private HttpHeaders getHeaders() {
         HttpHeaders headers = new HttpHeaders();
+
         headers.setContentType(APPLICATION_FORM_URLENCODED);
+
         headers.set(properties.getNaverHeader().getClientId(),
                 properties.getNaverClient().getClientId());
+
         headers.set(properties.getNaverHeader().getChainId(),
                 properties.getNaverClient().getChainId());
+
         headers.set(properties.getNaverHeader().getIdempotencyKey(),
                 UUID.randomUUID().toString());
+
         return headers;
     }
 }

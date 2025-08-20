@@ -143,7 +143,7 @@ public class OrderServiceImpl implements OrderService {
                 String orderCategoryIdPath = orderCategory.toString().toLowerCase();
 
                 if(orderType.equals(DIRECT)) {
-
+                    redisOrderCache.saveDirectOrderInfo(orderId, new DirectOrderDto(accessToken, productId, 1));
                 }
 
                 String returnUrl = Path.of(vendorReturnUrl, orderReturnUri, orderTypePath, orderCategoryIdPath).toString();

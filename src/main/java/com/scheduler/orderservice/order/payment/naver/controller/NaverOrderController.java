@@ -21,15 +21,14 @@ public class NaverOrderController {
     @Operation(summary = "네이버 페이. 바로 결제, 장바구니 결제 포함. 프론트 사용 X")
     @GetMapping("{orderType}/{orderCategory}/{orderId}")
     public ResponseEntity<NaverOrderResponse> createNaverOrder(
-            @PathVariable String orderId,
             @PathVariable String orderType,
             @PathVariable String orderCategory,
+            @PathVariable String orderId,
             @RequestParam String resultCode,
             @RequestParam String paymentId
-
     ) {
         return new ResponseEntity<>(naverOrderService.createNaverOrder(
-                orderId, OrderType.fromString(orderType), OrderCategory.fromString(orderCategory),
+                OrderType.fromString(orderType), OrderCategory.fromString(orderCategory), orderId,
                 resultCode, paymentId), CREATED);
     }
 }

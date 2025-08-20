@@ -8,6 +8,6 @@ import static com.scheduler.orderservice.order.payment.naver.dto.NaverPayRespons
 public interface NaverOrderService {
 
     NaverOrderResponse createNaverOrder(
-            String orderId, OrderType orderType, OrderCategory orderCategory, String resultCode, String paymentId);
+            OrderType orderType, OrderCategory orderCategory, String orderId, String resultCode, String paymentId);
 
 }

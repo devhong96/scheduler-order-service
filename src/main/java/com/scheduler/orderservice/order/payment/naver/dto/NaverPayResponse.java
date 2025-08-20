@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.List;
 
@@ -23,6 +24,7 @@ public class NaverPayResponse {
      */
     @Getter
     @Setter
+    @ToString
     public static class NaverOrderResponse {
         private String code;
         private String message;
@@ -30,6 +32,7 @@ public class NaverPayResponse {
 
         @Getter
         @Setter
+        @ToString
         public static class Body {
             private String paymentId;
             private Detail detail;
@@ -37,6 +40,7 @@ public class NaverPayResponse {
 
         @Getter
         @Setter
+        @ToString
         public static class Detail {
             private String productName;
             private String merchantId;
