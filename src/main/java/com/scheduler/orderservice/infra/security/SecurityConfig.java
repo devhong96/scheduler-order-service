@@ -41,6 +41,7 @@ public class SecurityConfig {
             "/order/**",
             "/order-api/**",
             "/actuator/**",
+            "/health-check/**"
     };
 
     @Bean

@@ -1,11 +1,12 @@
 package com.scheduler.orderservice.order.payment.naver.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class NaverPayResponse {
@@ -24,7 +25,6 @@ public class NaverPayResponse {
      */
     @Getter
     @Setter
-    @ToString
     public static class NaverOrderResponse {
         private String code;
         private String message;
@@ -32,7 +32,6 @@ public class NaverPayResponse {
 
         @Getter
         @Setter
-        @ToString
         public static class Body {
             private String paymentId;
             private Detail detail;
@@ -40,7 +39,6 @@ public class NaverPayResponse {
 
         @Getter
         @Setter
-        @ToString
         public static class Detail {
             private String productName;
             private String merchantId;
@@ -156,8 +154,8 @@ public class NaverPayResponse {
 
     @Getter
     @Setter
-    @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-    public static class CancelNaverDto {
+    public static class CancelNaverOrderDto {
+
         private String paymentId;
         private Integer cancelAmount;
         private String cancelReason;
@@ -166,5 +164,42 @@ public class NaverPayResponse {
         private Integer taxScopeAmount;
         //면세 대상 금액.
         private Integer taxExScopeAmount;
+    }
+
+    @Getter
+    @Setter
+    public static class NaverCancelOrderResponse {
+        private String code;
+        private String message;
+        private Body body;
+
+        @Getter
+        @Setter
+        public static class Body {
+            private String paymentId;
+            private String payHistId;
+            private String primaryPayMeans;
+
+            private Long primaryPayCancelAmount;
+            private Long primaryPayRestAmount;
+            private Long npointCancelAmount;
+            private Long npointRestAmount;
+            private Long giftCardCancelAmount;
+            private Long giftCardRestAmount;
+            private Long discountCancelAmount;
+            private Long discountRestAmount;
+
+            @JsonFormat(pattern = "yyyyMMddHHmmss")
+            private LocalDateTime cancelYmdt;
+
+            private Long totalRestAmount;
+            private Long applyRestAmount;
+            private Long taxScopeAmount;
+            private Long taxExScopeAmount;
+            private Long taxScopeRestAmount;
+            private Long taxExScopeRestAmount;
+            private Long environmentDepositAmount;
+            private Long environmentDepositRestAmount;
+        }
     }
 }

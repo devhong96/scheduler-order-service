@@ -1,9 +1,6 @@
 package com.scheduler.orderservice.order.client.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 public class MemberFeignDto {
 
@@ -33,6 +30,7 @@ public class MemberFeignDto {
     @Setter
     @AllArgsConstructor
     @NoArgsConstructor
+    @ToString
     public static class StudentResponse {
 
         private String studentId;

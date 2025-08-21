@@ -51,9 +51,14 @@ public class NicePayServiceImpl implements NicePayService {
 //        validateNicePayOrder(niceRequest);
 
         DirectOrderDto directOrder = redisOrderCache.getDirectOrderInfo(orderId);
-        StudentResponse readerInfo = memberServiceClient.getStudentInfo(directOrder.getAccessToken());
-        String studentId = readerInfo.getStudentId();
-        String username = readerInfo.getUsername();
+        log.info("DirectOrderDto at NicePay Order = {}", directOrder.toString());
+
+        StudentResponse studentInfo = memberServiceClient.getStudentInfo(directOrder.getAccessToken());
+        log.info("StudentResponse at NicePay Order = {}", studentInfo.toString());
+
+
+        String studentId = studentInfo.getStudentId();
+        String username = studentInfo.getUsername();
 
         NicePayOrderResponse response = getNicePayOrderResponse(niceRequest);
 
