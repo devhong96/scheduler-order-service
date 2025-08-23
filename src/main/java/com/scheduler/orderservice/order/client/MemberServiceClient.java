@@ -11,7 +11,7 @@ import static org.springframework.cloud.config.client.ConfigClientProperties.AUT
 @FeignClient(
         name = "scheduler-member-service",
         url =  "${scheduler_member_service_url:}",
-        path = "/feign-member",
+        path = "/feign-order-member",
         configuration = OrderFeignErrorDecoder.class
 )
 public interface MemberServiceClient {
@@ -33,9 +33,9 @@ public interface MemberServiceClient {
     void createNicePayDirectOrder(@RequestBody CreateNicePayDirectOrderDto createNicePayDirectOrderDto);
 
 
-    @GetMapping("student/{readerId}/{orderId}/{productId}")
+    @GetMapping("student/{studentId}/{orderId}/{productId}")
     CancelOrderInfoResponse findPreCancelOrderInfo(
-            @PathVariable String readerId,
+            @PathVariable String studentId,
             @PathVariable String orderId,
             @PathVariable String productId
     );

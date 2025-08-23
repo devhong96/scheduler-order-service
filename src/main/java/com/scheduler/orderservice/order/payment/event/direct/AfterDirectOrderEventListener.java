@@ -1,6 +1,5 @@
 package com.scheduler.orderservice.order.payment.event.direct;
 
-import com.scheduler.orderservice.order.client.MemberServiceClient;
 import com.scheduler.orderservice.order.payment.event.direct.vendor.KakaoAfterDirectOrderEvent;
 import com.scheduler.orderservice.order.payment.event.direct.vendor.NaverAfterDirectOrderEvent;
 import com.scheduler.orderservice.order.payment.event.direct.vendor.NicePayDirectAfterOrderEvent;
@@ -18,8 +17,6 @@ import static org.springframework.transaction.event.TransactionPhase.AFTER_COMMI
 @Component
 @RequiredArgsConstructor
 public class AfterDirectOrderEventListener {
-
-    private final MemberServiceClient memberServiceClient;
 
     @Async
     @TransactionalEventListener(phase = AFTER_COMMIT)

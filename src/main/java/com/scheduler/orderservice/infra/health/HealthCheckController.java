@@ -3,10 +3,7 @@ package com.scheduler.orderservice.infra.health;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import static com.scheduler.orderservice.order.client.dto.MemberFeignDto.StudentResponse;
 import static org.apache.hc.core5.http.HttpHeaders.AUTHORIZATION;
@@ -32,5 +29,13 @@ public class HealthCheckController {
             @RequestHeader(AUTHORIZATION) String accessToken
     ) {
         return new ResponseEntity<>(testService.test(accessToken), OK);
+    }
+
+    @PostMapping("/test-order/{studentId}/{username}/{quantity}")
+    public ResponseEntity<StudentResponse> testOrder(
+            @PathVariable String studentId, @PathVariable String username, @PathVariable Integer quantity
+    ) {
+        testService.test(studentId, username, quantity);
+        return new ResponseEntity<>(OK);
     }
 }
