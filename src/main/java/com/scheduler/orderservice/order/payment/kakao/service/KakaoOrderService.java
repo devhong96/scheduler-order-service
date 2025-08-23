@@ -10,7 +10,7 @@ public interface KakaoOrderService {
 
     KakaoPreOrderResponse kakaoPreOrder(String accessToken, KakaoPreOrderRequest kakaoPreOrderRequest);
 
-    KakaoOrderResponse createKakaoOrder(OrderType orderType, OrderCategory orderCategory, String orderId, String pgToken);
+    KakaoApproveOrderResponse createKakaoOrder(OrderType orderType, OrderCategory orderCategory, String orderId, String pgToken);
 
     KakaoSearchOrderResponse searchKakaoOrder(String tid);
 

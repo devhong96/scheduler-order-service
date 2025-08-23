@@ -23,8 +23,8 @@ import static com.scheduler.orderservice.order.common.domain.OrderType.DIRECT;
 import static com.scheduler.orderservice.order.common.domain.Vendor.*;
 import static com.scheduler.orderservice.order.common.dto.OrderDto.*;
 import static com.scheduler.orderservice.order.common.dto.OrderResponseList.OrderResponse;
-import static com.scheduler.orderservice.order.payment.kakao.dto.KakaoPayRequest.KakaoPreOrderResponse;
 import static com.scheduler.orderservice.order.payment.kakao.dto.KakaoPayRequest.KakaoPreOrderRequest;
+import static com.scheduler.orderservice.order.payment.kakao.dto.KakaoPayRequest.KakaoPreOrderResponse;
 import static com.scheduler.orderservice.order.payment.naver.dto.NaverPayRequest.NaverCreateOrderRequest;
 import static com.scheduler.orderservice.order.payment.nicepay.dto.NicePayResponse.NicePayPreOrderResponse;
 
@@ -163,6 +163,7 @@ public class OrderServiceImpl implements OrderService {
                 return new OrderResponse(NICEPAY, nicePayPreOrderResponse);
             }
         }
+
         throw new IllegalArgumentException("unsupported vendor");
     }
 }

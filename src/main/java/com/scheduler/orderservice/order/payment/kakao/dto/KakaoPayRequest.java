@@ -116,7 +116,7 @@ public class KakaoPayRequest {
 
     @Getter
     @Setter
-    public static class KakaoOrderResponse {
+    public static class KakaoApproveOrderResponse {
 
         private String aid;                 // 요청 고유 번호
         private String tid;                 // 결제 고유 번호

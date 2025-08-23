@@ -3,10 +3,7 @@ package com.scheduler.orderservice.order.payment.kakao.service;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.scheduler.orderservice.IntegrationTest;
 import com.scheduler.orderservice.order.client.MemberServiceClient;
-import com.scheduler.orderservice.order.client.dto.MemberFeignDto;
-import com.scheduler.orderservice.order.common.domain.OrderCategory;
 import com.scheduler.orderservice.order.common.domain.OrderType;
-import com.scheduler.orderservice.order.payment.kakao.dto.KakaoPayRequest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,11 +11,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-import static com.scheduler.orderservice.order.client.dto.MemberFeignDto.*;
-import static com.scheduler.orderservice.order.common.domain.OrderCategory.*;
-import static com.scheduler.orderservice.order.payment.kakao.dto.KakaoPayRequest.*;
+import static com.scheduler.orderservice.order.client.dto.MemberFeignDto.StudentResponse;
+import static com.scheduler.orderservice.order.common.domain.OrderCategory.TUITION;
+import static com.scheduler.orderservice.order.payment.kakao.dto.KakaoPayRequest.KakaoPreOrderRequest;
+import static com.scheduler.orderservice.order.payment.kakao.dto.KakaoPayRequest.KakaoPreOrderResponse;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @IntegrationTest

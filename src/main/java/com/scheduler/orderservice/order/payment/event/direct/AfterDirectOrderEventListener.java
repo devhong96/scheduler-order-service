@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 import static com.scheduler.orderservice.order.common.domain.OrderCategory.TUITION;
-import static com.scheduler.orderservice.order.payment.kakao.dto.KakaoPayRequest.KakaoOrderResponse;
+import static com.scheduler.orderservice.order.payment.kakao.dto.KakaoPayRequest.KakaoApproveOrderResponse;
 import static org.springframework.transaction.event.TransactionPhase.AFTER_COMMIT;
 
 @Slf4j
@@ -25,7 +25,7 @@ public class AfterDirectOrderEventListener {
     @TransactionalEventListener(phase = AFTER_COMMIT)
     public void handleKakaoEventListener(KakaoAfterDirectOrderEvent event) {
 
-        KakaoOrderResponse response = event.getKakaoOrderResponse();
+        KakaoApproveOrderResponse response = event.getKakaoApproveOrderResponse();
 
         String orderId = response.getPartner_order_id();
 

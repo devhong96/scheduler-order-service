@@ -4,7 +4,7 @@ import com.scheduler.orderservice.order.common.domain.OrderCategory;
 import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
 
-import static com.scheduler.orderservice.order.payment.kakao.dto.KakaoPayRequest.KakaoOrderResponse;
+import static com.scheduler.orderservice.order.payment.kakao.dto.KakaoPayRequest.KakaoApproveOrderResponse;
 
 @Getter
 public class KakaoAfterDirectOrderEvent extends ApplicationEvent {
@@ -15,13 +15,13 @@ public class KakaoAfterDirectOrderEvent extends ApplicationEvent {
 
     private final OrderCategory orderCategory;
 
-    private final KakaoOrderResponse kakaoOrderResponse;
+    private final KakaoApproveOrderResponse kakaoApproveOrderResponse;
 
-    public KakaoAfterDirectOrderEvent(Object source, String studentId, String username, OrderCategory orderCategory, KakaoOrderResponse kakaoOrderResponse) {
+    public KakaoAfterDirectOrderEvent(Object source, String studentId, String username, OrderCategory orderCategory, KakaoApproveOrderResponse kakaoApproveOrderResponse) {
         super(source);
         this.studentId = studentId;
         this.username = username;
         this.orderCategory = orderCategory;
-        this.kakaoOrderResponse = kakaoOrderResponse;
+        this.kakaoApproveOrderResponse = kakaoApproveOrderResponse;
     }
 }

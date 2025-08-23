@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import static com.scheduler.orderservice.order.payment.naver.dto.NaverPayResponse.*;
-import static com.scheduler.orderservice.order.payment.naver.dto.NaverPayResponse.NaverOrderResponse;
 import static org.springframework.http.HttpStatus.CREATED;
 
 @RestController

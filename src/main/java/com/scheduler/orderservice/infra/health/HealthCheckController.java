@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import static com.scheduler.orderservice.order.client.dto.MemberFeignDto.*;
+import static com.scheduler.orderservice.order.client.dto.MemberFeignDto.StudentResponse;
 import static org.apache.hc.core5.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.OK;
 

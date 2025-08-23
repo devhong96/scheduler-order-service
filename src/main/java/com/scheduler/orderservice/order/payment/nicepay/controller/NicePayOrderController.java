@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import static com.scheduler.orderservice.order.payment.nicepay.dto.NicePayRequest.NicePayCancelOrderRequest;
 import static com.scheduler.orderservice.order.payment.nicepay.dto.NicePayRequest.NicePayPreOrderRequest;
 import static com.scheduler.orderservice.order.payment.nicepay.dto.NicePayResponse.NicePayCancelOrderResponse;
+import static com.scheduler.orderservice.order.payment.nicepay.dto.NicePayResponse.NicePayOrderResponse;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 
@@ -23,17 +24,16 @@ public class NicePayOrderController {
 
     @Operation(summary = " 페이. 바로 결제, 장바구니 결제 포함. 프론트 사용 X")
     @PostMapping("{orderType}/{orderCategory}/{orderId}")
-    public ResponseEntity<Void> createNicePayOrder(
+    public ResponseEntity<NicePayOrderResponse> createNicePayOrder(
             @PathVariable String orderType,
             @PathVariable String orderCategory,
             @PathVariable String orderId,
             NicePayPreOrderRequest nicePayPreOrderRequest
     ) {
-        nicePayService.createNicePayOrder(
+        return new ResponseEntity<>(nicePayService.createNicePayOrder(
                 orderId,
                 OrderType.fromString(orderType), OrderCategory.fromString(orderCategory),
-                nicePayPreOrderRequest);
-        return new ResponseEntity<>(CREATED);
+                nicePayPreOrderRequest), CREATED);
     }
 
     @Operation(summary = " ")

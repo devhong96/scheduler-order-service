@@ -11,14 +11,14 @@ import com.scheduler.orderservice.order.common.dto.KakaoDto;
 import com.scheduler.orderservice.order.payment.event.cancel.CancelOrderEvent;
 import com.scheduler.orderservice.order.payment.event.direct.vendor.KakaoAfterDirectOrderEvent;
 import com.scheduler.orderservice.order.payment.event.direct.vendor.KakaoDirectOrderEvent;
+import com.scheduler.orderservice.order.payment.kakao.service.component.ApproveKakaoOrder;
+import com.scheduler.orderservice.order.payment.kakao.service.component.CancelKakaoOrder;
+import com.scheduler.orderservice.order.payment.kakao.service.component.GetKakaoOrder;
+import com.scheduler.orderservice.order.payment.kakao.service.component.PrepareKakaoOrder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,8 +30,6 @@ import static com.scheduler.orderservice.order.payment.kakao.dto.KakaoCancelOrde
 import static com.scheduler.orderservice.order.payment.kakao.dto.KakaoCancelOrderDto.CancelOrderPreRequest.SingleCancelOrder;
 import static com.scheduler.orderservice.order.payment.kakao.dto.KakaoPayRequest.*;
 import static com.scheduler.orderservice.order.payment.kakao.dto.KakaoSearchOrderDto.KakaoSearchOrderResponse;
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
-import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 @Slf4j
 @Service
@@ -39,66 +37,36 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 public class KakaoOrderServiceImpl implements KakaoOrderService {
 
     private final MemberServiceClient memberServiceClient;
+    private final GetKakaoOrder getKakaoOrder;
+    private final CancelKakaoOrder cancelKakaoOrder;
+    private final ApproveKakaoOrder approveKakaoOrder;
+    private final PrepareKakaoOrder prepareKakaoOrder;
 
-    private final WebClient webClient;
     private final RedisOrderCache redisOrderCache;
     private final KakaoProperties kakaoProperties;
     private final ApplicationEventPublisher eventPublisher;
 
-
     @Override
     public KakaoPreOrderResponse kakaoPreOrder(
-            String accessToken,
-            KakaoPreOrderRequest kakaoPreOrderRequest
+            String accessToken, KakaoPreOrderRequest kakaoPreOrderRequest
     ) {
 
         String studentId = memberServiceClient.getStudentInfo(accessToken).getStudentId();
 
         String itemCode = kakaoPreOrderRequest.getItemCode();
 
-        String orderId = kakaoPreOrderRequest.getPartnerOrderId();
-
-//      =========================================================
-
-        OrderType orderType = kakaoPreOrderRequest.getOrderType();
         Integer quantity = kakaoPreOrderRequest.getQuantity();
 
+        String orderId = kakaoPreOrderRequest.getPartnerOrderId();
 
-        String vendorReturnUrl = kakaoProperties.getKakaoUrl().getBaseUrl();
-        String orderReturnUri = "order/kakao/pay/success";
+        OrderType orderType = kakaoPreOrderRequest.getOrderType();
 
         if(orderType.equals(DIRECT)) {
             redisOrderCache.saveDirectOrderInfo(orderId, new DirectOrderDto(accessToken, itemCode, quantity));
         }
 
-        String orderCategoryIdPath = kakaoPreOrderRequest.getOrderCategory().getDescription();
-
-        KakaoOrderReadyRequest kakaoOrderReadyRequest = KakaoOrderReadyRequest.builder()
-                .cid(kakaoProperties.getKakaoClient().getCid())
-                //가맹점 주문번호
-                .partnerOrderId(orderId)
-                .partnerUserId(kakaoProperties.getKakaoClient().getPartnerUserId())
-                .itemCode(kakaoPreOrderRequest.getItemCode())
-                .itemName(kakaoPreOrderRequest.getItemName())
-                .quantity(kakaoPreOrderRequest.getQuantity())
-                .totalAmount(kakaoPreOrderRequest.getTotalAmount())
-                .taxFreeAmount(kakaoPreOrderRequest.getTaxFreeAmount())
-                .vatAmount(kakaoPreOrderRequest.getVatAmount())
-                .approvalUrl(vendorReturnUrl + "/" + orderReturnUri + "/" + orderType.toString().toLowerCase() + "/" + orderCategoryIdPath + "/" + orderId)
-                .cancelUrl(vendorReturnUrl + "/order/kakao/pay/cancel")
-                .failUrl(vendorReturnUrl + "/order/kakao/pay/fail")
-                .build();
-
-
-        Mono<KakaoPreOrderResponse> kakaoEbookPreOrderResponseMono = webClient.post()
-                .uri(kakaoProperties.getKakaoUrl().getReadyUrl())
-                .headers(header -> header.addAll(getHeaders()))
-                .bodyValue(kakaoOrderReadyRequest)
-                .retrieve()
-                .bodyToMono(KakaoPreOrderResponse.class);
-
-        KakaoPreOrderResponse response = kakaoEbookPreOrderResponseMono.blockOptional()
-                .orElseThrow(() -> new PaymentException("결제 준비 응답이 null 입니다"));
+        KakaoPreOrderResponse response = prepareKakaoOrder.kakaoPreOrderResponse(orderId, kakaoPreOrderRequest)
+                .blockOptional().orElseThrow(PaymentException::new);
 
         String tid = response.getTid();
         redisOrderCache.saveKakaoOrderInfo(orderId, new KakaoDto(accessToken, tid, studentId, System.currentTimeMillis()));
@@ -107,8 +75,7 @@ public class KakaoOrderServiceImpl implements KakaoOrderService {
     }
 
     @Override
-    @Transactional
-    public KakaoOrderResponse createKakaoOrder(
+    public KakaoApproveOrderResponse createKakaoOrder(
             OrderType orderType, OrderCategory orderCategory,
             String orderId, String pgToken
     ) {
@@ -120,7 +87,8 @@ public class KakaoOrderServiceImpl implements KakaoOrderService {
 
         String username = memberServiceClient.getStudentInfo(accessToken).getUsername();
 
-        KakaoOrderResponse response = getOrderResponse(orderId, pgToken);
+        KakaoApproveOrderResponse response = approveKakaoOrder.kakaoApproveOrderResponse(orderId, pgToken)
+                .blockOptional().orElseThrow(PaymentException::new);
 
         // 주문 내역 등록
         switch (orderType) {
@@ -139,19 +107,18 @@ public class KakaoOrderServiceImpl implements KakaoOrderService {
 
     //카카오 공통 로직
     @Override
-    @Transactional
     public KakaoSearchOrderResponse searchKakaoOrder(String tid) {
 
-        return getKakaoSearchOrderResponseEntity(tid);
+        return getKakaoOrder.getKakaoOrderResponse(tid)
+                .blockOptional().orElseThrow(PaymentException::new);
     }
 
     @Override
-    @Transactional
     public void prepareToCancelKakaoOrder(String accessToken, CancelOrderPreRequest preRequest) {
 
-        StudentResponse readerInfo = memberServiceClient.getStudentInfo(accessToken);
-        String username = readerInfo.getUsername();
-        String memberId = readerInfo.getStudentId();
+        StudentResponse studentInfo = memberServiceClient.getStudentInfo(accessToken);
+        String username = studentInfo.getUsername();
+        String memberId = studentInfo.getStudentId();
 
         List<SingleCancelOrder> singleCancelOrders = preRequest.getSingleCancelOrders();
         String refundReason = preRequest.getRefundReason();
@@ -183,79 +150,12 @@ public class KakaoOrderServiceImpl implements KakaoOrderService {
                 .cancelAvailableAmount(cancelAmount)
                 .build();
 
-        CancelOrderResponse cancelOrderResponse = cancelKakaoOrder(cancelOrderRequest);
+        CancelOrderResponse cancelOrderResponse = cancelKakaoOrder.cancelKakaoOrder(cancelOrderRequest)
+                .blockOptional().orElseThrow(PaymentException::new);
 
         //주문 취소
         eventPublisher.publishEvent(new CancelOrderEvent(this, memberId, username, refundReason,
                 orderList, cancelOrderResponse));
     }
 
-
-    public CancelOrderResponse cancelKakaoOrder(CancelOrderRequest cancelOrderRequest) {
-
-        String tid = cancelOrderRequest.getTid();
-
-        getKakaoSearchOrderResponseEntity(tid);
-
-        Mono<CancelOrderResponse> cancelOrderResponseMono = webClient.post()
-                .uri(kakaoProperties.getKakaoUrl().getCancelUrl())
-                .headers(h -> h.addAll(getHeaders()))
-                .bodyValue(cancelOrderRequest)
-                .retrieve()
-                .bodyToMono(CancelOrderResponse.class);
-
-        return cancelOrderResponseMono.blockOptional().orElseThrow(() -> new PaymentException("결제 준비 응답이 null 입니다"));
-    }
-
-    private KakaoOrderResponse getOrderResponse(String orderId, String pgToken) {
-
-        KakaoDto kakaoOrder = redisOrderCache.getKakaoOrderInfo(orderId);
-
-        String tid = kakaoOrder.getTid();
-
-        KakaoOrderApproveRequest request = KakaoOrderApproveRequest.builder()
-                .tid(tid)
-                .cid(kakaoProperties.getKakaoClient().getCid())
-                .partnerOrderId(orderId)
-                .partnerUserId(kakaoProperties.getKakaoClient().getPartnerUserId())
-                .pgToken(pgToken)
-                .build();
-
-        Mono<KakaoOrderResponse> kakaoOrderResponseMono = webClient.post()
-                .uri(kakaoProperties.getKakaoUrl().getApproveUrl())
-                .headers(header -> header.addAll(getHeaders()))
-                .bodyValue(request)
-                .retrieve()
-                .bodyToMono(KakaoOrderResponse.class);
-
-        return kakaoOrderResponseMono.blockOptional().orElseThrow(() -> new PaymentException("결제 준비 응답이 null 입니다"));
-    }
-
-
-    private KakaoSearchOrderResponse getKakaoSearchOrderResponseEntity(String tid) {
-
-        KakaoOrderSearchRequest orderSearchRequest = KakaoOrderSearchRequest
-                .builder()
-                .cid(kakaoProperties.getKakaoClient().getCid())
-                .tid(tid)
-                .build();
-
-        Mono<KakaoSearchOrderResponse> kakaoSearchOrderResponse = webClient.post()
-                .uri(kakaoProperties.getKakaoUrl().getOrderUrl())
-                .headers(header -> header.addAll(getHeaders()))
-                .bodyValue(orderSearchRequest)
-                .retrieve()
-                .bodyToMono(KakaoSearchOrderResponse.class);
-
-        return kakaoSearchOrderResponse.blockOptional().orElseThrow(() -> new PaymentException("결제 준비 응답이 null입니다"));
-
-
-    }
-
-    private HttpHeaders getHeaders() {
-        HttpHeaders headers = new HttpHeaders();
-        headers.set(AUTHORIZATION, "DEV_SECRET_KEY " + kakaoProperties.getKakaoClient().getSecretKey());
-        headers.setContentType(APPLICATION_JSON);
-        return headers;
-    }
 }

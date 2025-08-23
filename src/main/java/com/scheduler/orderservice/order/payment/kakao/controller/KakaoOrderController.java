@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import static com.scheduler.orderservice.order.payment.kakao.dto.KakaoCancelOrderDto.CancelOrderPreRequest;
-import static com.scheduler.orderservice.order.payment.kakao.dto.KakaoPayRequest.KakaoOrderResponse;
+import static com.scheduler.orderservice.order.payment.kakao.dto.KakaoPayRequest.KakaoApproveOrderResponse;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.BAD_GATEWAY;
 import static org.springframework.http.HttpStatus.OK;
@@ -23,7 +23,7 @@ public class KakaoOrderController {
 
     @Operation(summary = "카카오 페이 결제", description = "프론트에서 사용 X")
     @GetMapping("success/{orderType}/{orderCategory}/{orderId}")
-    public ResponseEntity<KakaoOrderResponse> createKakaoCartOrder(
+    public ResponseEntity<KakaoApproveOrderResponse> createKakaoCartOrder(
             @PathVariable String orderType,
             @PathVariable String orderCategory,
             @PathVariable String orderId,

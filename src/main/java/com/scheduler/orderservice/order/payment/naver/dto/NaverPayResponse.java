@@ -79,7 +79,7 @@ public class NaverPayResponse {
 
     @Getter
     @Setter
-    public static class SearchNaverOrderHistoryResponse {
+    public static class SearchNaverOrderResponse {
         private String code;
         private String message;
         private Body body;

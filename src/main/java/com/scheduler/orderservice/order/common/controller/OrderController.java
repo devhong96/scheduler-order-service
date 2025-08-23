@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static com.scheduler.orderservice.order.common.dto.OrderDto.*;
+import static com.scheduler.orderservice.order.common.dto.OrderDto.PreOrderRequest;
 import static com.scheduler.orderservice.order.common.dto.OrderResponseList.OrderResponse;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.OK;
