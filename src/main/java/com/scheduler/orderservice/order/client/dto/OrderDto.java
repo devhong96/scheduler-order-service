@@ -10,7 +10,7 @@ import lombok.Setter;
 
 import java.util.List;
 
-import static com.scheduler.orderservice.order.payment.kakao.dto.KakaoPayRequest.KakaoApproveOrderResponse;
+import static com.scheduler.orderservice.order.payment.kakao.dto.KakaoPayResponse.KakaoApproveOrderResponse;
 import static com.scheduler.orderservice.order.payment.naver.dto.NaverPayResponse.NaverOrderResponse.Detail;
 import static com.scheduler.orderservice.order.payment.nicepay.dto.NicePayResponse.NicePayOrderResponse;
 import static jakarta.persistence.EnumType.STRING;

@@ -8,12 +8,14 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
-import static com.scheduler.orderservice.order.payment.kakao.dto.KakaoPayRequest.*;
+import static com.scheduler.orderservice.order.payment.kakao.dto.KakaoPayRequest.KakaoOrderReadyRequest;
+import static com.scheduler.orderservice.order.payment.kakao.dto.KakaoPayRequest.KakaoPreOrderRequest;
+import static com.scheduler.orderservice.order.payment.kakao.dto.KakaoPayResponse.KakaoPreOrderResponse;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class PrepareKakaoOrder {
+public class KakaoPreOrder {
 
     private final WebClient webClient;
     private final KakaoProperties kakaoProperties;

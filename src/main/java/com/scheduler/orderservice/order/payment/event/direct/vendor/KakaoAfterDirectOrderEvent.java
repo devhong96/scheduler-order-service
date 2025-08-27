@@ -4,7 +4,8 @@ import com.scheduler.orderservice.order.common.domain.OrderCategory;
 import lombok.Getter;
 import org.springframework.context.ApplicationEvent;
 
-import static com.scheduler.orderservice.order.payment.kakao.dto.KakaoPayRequest.KakaoApproveOrderResponse;
+import static com.scheduler.orderservice.order.payment.kakao.dto.KakaoPayResponse.KakaoApproveOrderResponse;
+
 
 @Getter
 public class KakaoAfterDirectOrderEvent extends ApplicationEvent {

@@ -31,6 +31,7 @@ public class NaverOrderServiceImpl implements NaverOrderService {
     private final CreateNaverOrder createNaverOrder;
     private final CancelNaverOrder cancelNaverOrder;
     private final SearchNaverOrder searchNaverOrder;
+
     private final ApplicationEventPublisher eventPublisher;
 
     @Override
@@ -42,7 +43,6 @@ public class NaverOrderServiceImpl implements NaverOrderService {
         DirectOrderDto directOrder = redisOrderCache.getDirectOrderInfo(orderId);
 
         StudentResponse studentInfo = memberServiceClient.getStudentInfo(directOrder.getAccessToken());
-        log.info("StudentResponse at Naver OrderService = {}", studentInfo.toString());
 
         String studentId = studentInfo.getStudentId();
         String username = studentInfo.getUsername();
@@ -50,7 +50,6 @@ public class NaverOrderServiceImpl implements NaverOrderService {
 
         NaverOrderResponse response = createNaverOrder.createNaverOrderResponse(resultCode, paymentId)
                 .blockOptional().orElseThrow(PaymentException::new);
-        log.info("NaverOrderResponse at Naver OrderService = {}", response.toString());
 
         applyOrder(orderType, studentId, username, quantity, orderCategory, response);
 

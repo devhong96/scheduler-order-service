@@ -2,10 +2,11 @@ package com.scheduler.orderservice.order.client;
 
 import com.scheduler.orderservice.order.client.error.OrderFeignErrorDecoder;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 import static com.scheduler.orderservice.order.client.dto.MemberFeignDto.StudentResponse;
-import static com.scheduler.orderservice.order.client.dto.OrderDto.*;
 import static org.springframework.cloud.config.client.ConfigClientProperties.AUTHORIZATION;
 
 @FeignClient(
@@ -22,23 +23,6 @@ public interface MemberServiceClient {
     @GetMapping("student/{username}")
     StudentResponse findStudentByUsername(@PathVariable String username);
 
-    //
-    @PostMapping("student/kakao")
-    void createKakaoDirectOrder(@RequestBody CreateKakaoDirectOrderDto createKakaoDirectOrderDto);
-
-    @PostMapping("student/naver")
-    void createNaverDirectOrder(@RequestBody CreateNaverDirectOrderDto createNaverDirectOrderDto);
-
-    @PostMapping("student/nicepay")
-    void createNicePayDirectOrder(@RequestBody CreateNicePayDirectOrderDto createNicePayDirectOrderDto);
-
-
-    @GetMapping("student/{studentId}/{orderId}/{productId}")
-    CancelOrderInfoResponse findPreCancelOrderInfo(
-            @PathVariable String studentId,
-            @PathVariable String orderId,
-            @PathVariable String productId
-    );
 }
 
 

@@ -17,11 +17,11 @@ public class KakaoCancelOrderDto {
 
         private String refundReason;
 
-        private List<SingleCancelOrder> singleCancelOrders = new ArrayList<>();
+        private List<CancelSingleOrder> cancelSingleOrders = new ArrayList<>();
 
         @Getter
         @Setter
-        public static class SingleCancelOrder {
+        public static class CancelSingleOrder {
             private String orderId;
             private String productId;
         }

@@ -11,7 +11,7 @@ import java.util.List;
 
 import static jakarta.persistence.EnumType.STRING;
 
-public class OrderDto {
+public class OrderRequest {
 
     @Getter
     @Setter

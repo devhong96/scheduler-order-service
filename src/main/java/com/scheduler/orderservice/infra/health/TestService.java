@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import static com.scheduler.orderservice.order.client.dto.MemberFeignDto.StudentResponse;
-import static com.scheduler.orderservice.order.client.dto.OrderDto.CreateNaverDirectOrderDto;
 
 @Service
 @RequiredArgsConstructor
@@ -28,14 +27,6 @@ public class TestService {
             String studentId, String username, Integer quantity
     ) {
 
-        try {
-            CreateNaverDirectOrderDto createNaverDirectOrderDto = new CreateNaverDirectOrderDto(studentId, username, quantity, OrderCategory.TUITION, createSampleDetail());
-            memberServiceClient.createNaverDirectOrder(createNaverDirectOrderDto);
-
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            throw new RuntimeException(e);
-        }
     }
 
     public static NaverPayResponse.NaverOrderResponse.Detail createSampleDetail() {
