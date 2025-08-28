@@ -8,7 +8,6 @@ import com.scheduler.orderservice.order.payment.kakao.service.KakaoOrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import static com.scheduler.orderservice.order.common.domain.OrderCategory.PRODUCT;
 import static com.scheduler.orderservice.order.common.domain.Vendor.KAKAO;
 import static com.scheduler.orderservice.order.common.dto.OrderResponseList.OrderResponse;
 import static com.scheduler.orderservice.order.payment.kakao.dto.KakaoPayResponse.KakaoPreOrderResponse;
@@ -46,12 +45,7 @@ public class KakaoCreateOrderService implements CreateOrderGateway {
                 .orderCategory(info.getOrderCategory())
                 .build();
 
-
         KakaoPreOrderResponse kakaoPreOrder = kakaoOrderService.kakaoPreOrder(info.getAccessToken(), kakaoPreOrderRequest);
-
-        if(info.getOrderCategory().equals(PRODUCT)) {
-
-        }
 
         return new OrderResponse(KAKAO, kakaoPreOrder);
     }

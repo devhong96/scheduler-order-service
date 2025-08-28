@@ -6,13 +6,10 @@ import com.scheduler.orderservice.order.common.component.RedisOrderCache;
 import com.scheduler.orderservice.order.common.domain.OrderCategory;
 import com.scheduler.orderservice.order.common.domain.OrderType;
 import com.scheduler.orderservice.order.common.dto.DirectOrderDto;
-import com.scheduler.orderservice.order.payment.event.direct.vendor.NicePayDirectAfterOrderEvent;
-import com.scheduler.orderservice.order.payment.event.direct.vendor.NicePayDirectOrderEvent;
 import com.scheduler.orderservice.order.payment.nicepay.service.component.CancelNicePayOrder;
 import com.scheduler.orderservice.order.payment.nicepay.service.component.CreateNicePayOrder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,7 +28,6 @@ public class NicePayServiceImpl implements NicePayService {
 
     private final CreateNicePayOrder createNicePayOrder;
     private final CancelNicePayOrder cancelNicePayOrder;
-    private final ApplicationEventPublisher eventPublisher;
     private final RedisOrderCache redisOrderCache;
 
     @Override
@@ -45,10 +41,8 @@ public class NicePayServiceImpl implements NicePayService {
 //        validateNicePayOrder.validateNicePayOrder(niceRequest);
 
         DirectOrderDto directOrder = redisOrderCache.getDirectOrderInfo(orderId);
-        log.info("DirectOrderDto at NicePay Order = {}", directOrder.toString());
 
         StudentResponse studentInfo = memberServiceClient.getStudentInfo(directOrder.getAccessToken());
-        log.info("StudentResponse at NicePay Order = {}", studentInfo.toString());
 
 
         String studentId = studentInfo.getStudentId();
@@ -58,28 +52,10 @@ public class NicePayServiceImpl implements NicePayService {
         NicePayOrderResponse response = createNicePayOrder.createNicePayOrder(niceRequest)
                 .blockOptional().orElseThrow(PaymentException::new);
 
-        applyOrder(orderType, studentId, username, quantity, orderCategory, response);
+//        applyOrder(orderType, studentId, username, quantity, orderCategory, response);
 
         return response;
 
-    }
-
-    private void applyOrder(OrderType orderType, String studentId, String username,
-                            Integer quantity, OrderCategory orderCategory, NicePayOrderResponse response
-    ) {
-        switch (orderType) {
-
-            case DIRECT : {
-
-                eventPublisher.publishEvent(new NicePayDirectOrderEvent(this, studentId, username, quantity, orderCategory, response));
-                eventPublisher.publishEvent(new NicePayDirectAfterOrderEvent(this, studentId, username, orderCategory, response));
-                break;
-            }
-
-            case CART: {
-                break;
-            }
-        }
     }
 
     //TODO 추가 로직

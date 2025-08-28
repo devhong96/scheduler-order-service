@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 
 import java.nio.file.Path;
 
-import static com.scheduler.orderservice.order.common.domain.OrderCategory.PRODUCT;
 import static com.scheduler.orderservice.order.common.domain.OrderType.DIRECT;
 import static com.scheduler.orderservice.order.common.domain.Vendor.NAVER;
 import static com.scheduler.orderservice.order.common.dto.OrderResponseList.OrderResponse;
@@ -52,11 +51,6 @@ public class NaverCreateOrderService implements CreateOrderGateway {
                 .taxExScopeAmount(0)
                 .returnUrl(returnUrl)
                 .build();
-
-        if(info.getOrderCategory().equals(PRODUCT)) {
-
-
-        }
 
         return new OrderResponse(NAVER, naverCreateOrderRequest);
 

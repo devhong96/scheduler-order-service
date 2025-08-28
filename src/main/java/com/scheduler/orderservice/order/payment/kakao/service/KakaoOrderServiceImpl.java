@@ -8,14 +8,11 @@ import com.scheduler.orderservice.order.common.domain.OrderType;
 import com.scheduler.orderservice.order.common.dto.CancelOrderRequest;
 import com.scheduler.orderservice.order.common.dto.DirectOrderDto;
 import com.scheduler.orderservice.order.common.dto.KakaoDto;
-import com.scheduler.orderservice.order.payment.event.direct.vendor.KakaoAfterDirectOrderEvent;
-import com.scheduler.orderservice.order.payment.event.direct.vendor.KakaoDirectOrderEvent;
 import com.scheduler.orderservice.order.payment.kakao.service.component.ApproveKakaoOrder;
 import com.scheduler.orderservice.order.payment.kakao.service.component.GetKakaoOrder;
 import com.scheduler.orderservice.order.payment.kakao.service.component.KakaoPreOrder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import static com.scheduler.orderservice.order.common.domain.OrderType.DIRECT;
@@ -35,7 +32,6 @@ public class KakaoOrderServiceImpl implements KakaoOrderService {
     private final KakaoPreOrder kakaoPreOrder;
 
     private final RedisOrderCache redisOrderCache;
-    private final ApplicationEventPublisher eventPublisher;
 
     @Override
     public KakaoPreOrderResponse kakaoPreOrder(
@@ -84,12 +80,12 @@ public class KakaoOrderServiceImpl implements KakaoOrderService {
         // 주문 내역 등록
         switch (orderType) {
             case DIRECT:
+                // 즉시 구매면 반환값 그대로 저장.
 
-                eventPublisher.publishEvent(new KakaoDirectOrderEvent(this, studentId, username, 1, orderCategory, response));
-                eventPublisher.publishEvent(new KakaoAfterDirectOrderEvent(this, studentId, username, orderCategory, response));
                 break;
 
             case CART :
+                // 장바구니에 있는거 이용해야 함.
                 break;
         }
 

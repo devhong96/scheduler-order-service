@@ -6,16 +6,15 @@ import com.scheduler.orderservice.order.common.domain.Vendor;
 import com.scheduler.orderservice.order.common.dto.DirectOrderDto;
 import com.scheduler.orderservice.order.common.dto.OrderCheckoutInfo;
 import com.scheduler.orderservice.order.common.event.CreateOrderGateway;
-import com.scheduler.orderservice.order.payment.nicepay.dto.NicePayResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.nio.file.Path;
 
-import static com.scheduler.orderservice.order.common.domain.OrderCategory.PRODUCT;
 import static com.scheduler.orderservice.order.common.domain.OrderType.DIRECT;
 import static com.scheduler.orderservice.order.common.domain.Vendor.NICEPAY;
 import static com.scheduler.orderservice.order.common.dto.OrderResponseList.OrderResponse;
+import static com.scheduler.orderservice.order.payment.nicepay.dto.NicePayResponse.NicePayPreOrderResponse;
 
 @Component
 @RequiredArgsConstructor
@@ -31,6 +30,7 @@ public class NICEPayCreateOrderService implements CreateOrderGateway {
 
     @Override
     public OrderResponse createOrder(OrderCheckoutInfo info) {
+
         String vendorReturnUrl = nicePayProperties.getNiceUrl().getBaseUrl();
         String orderReturnUri = "order/nicepay/pay";
         String orderTypePath = info.getOrderType().toString().toLowerCase();
@@ -42,16 +42,12 @@ public class NICEPayCreateOrderService implements CreateOrderGateway {
 
         String returnUrl = Path.of(vendorReturnUrl, orderReturnUri, orderTypePath, orderCategoryIdPath).toString();
 
-        NicePayResponse.NicePayPreOrderResponse nicePayPreOrderResponse = NicePayResponse.NicePayPreOrderResponse.builder()
+        NicePayPreOrderResponse nicePayPreOrderResponse = NicePayPreOrderResponse.builder()
                 .orderId(info.getOrderId())
                 .amount(info.getAmountSum())
                 .goodsName(info.getProductName())
                 .returnUrl(returnUrl)
                 .build();
-
-        if(info.getOrderCategory().equals(PRODUCT)) {
-
-        }
 
         return new OrderResponse(NICEPAY, nicePayPreOrderResponse);
     }

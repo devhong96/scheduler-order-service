@@ -6,8 +6,8 @@ import com.scheduler.orderservice.order.common.component.RedisOrderCache;
 import com.scheduler.orderservice.order.common.domain.OrderCategory;
 import com.scheduler.orderservice.order.common.domain.OrderType;
 import com.scheduler.orderservice.order.common.dto.DirectOrderDto;
-import com.scheduler.orderservice.order.payment.event.direct.vendor.NaverAfterDirectOrderEvent;
-import com.scheduler.orderservice.order.payment.event.direct.vendor.NaverDirectOrderEvent;
+import com.scheduler.orderservice.order.payment.common.CreateOrderProcesserFactory;
+import com.scheduler.orderservice.order.payment.common.CreateOrderProcessor;
 import com.scheduler.orderservice.order.payment.naver.service.component.CancelNaverOrder;
 import com.scheduler.orderservice.order.payment.naver.service.component.CreateNaverOrder;
 import com.scheduler.orderservice.order.payment.naver.service.component.SearchNaverOrder;
@@ -17,6 +17,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import static com.scheduler.orderservice.order.client.dto.MemberFeignDto.StudentResponse;
+import static com.scheduler.orderservice.order.common.domain.Vendor.NAVER;
 import static com.scheduler.orderservice.order.payment.naver.dto.NaverPayRequest.SearchNaverOrderHistoryDto;
 import static com.scheduler.orderservice.order.payment.naver.dto.NaverPayResponse.*;
 
@@ -27,6 +28,7 @@ public class NaverOrderServiceImpl implements NaverOrderService {
 
     private final MemberServiceClient memberServiceClient;
     private final RedisOrderCache redisOrderCache;
+    private final CreateOrderProcesserFactory factory;
 
     private final CreateNaverOrder createNaverOrder;
     private final CancelNaverOrder cancelNaverOrder;
@@ -51,27 +53,14 @@ public class NaverOrderServiceImpl implements NaverOrderService {
         NaverOrderResponse response = createNaverOrder.createNaverOrderResponse(resultCode, paymentId)
                 .blockOptional().orElseThrow(PaymentException::new);
 
-        applyOrder(orderType, studentId, username, quantity, orderCategory, response);
+        CreateOrderProcessor processor = factory.findProcessor(NAVER, orderType);
+        processor.process();
+
+//        applyOrder(orderType, studentId, username, quantity, orderCategory, response);
 
         return response;
     }
 
-    public void applyOrder(OrderType orderType, String studentId, String username, Integer quantity,
-                            OrderCategory orderCategory, NaverOrderResponse response
-    ) {
-        switch (orderType) {
-            case DIRECT: {
-                eventPublisher.publishEvent(new NaverDirectOrderEvent(this, studentId, username, quantity, orderCategory, response));
-                eventPublisher.publishEvent(new NaverAfterDirectOrderEvent(this, studentId, username, quantity, orderCategory, response));
-                break;
-            }
-
-            case CART: {
-
-                break;
-            }
-        }
-    }
 
     //TODO 후속 처리
     @Override

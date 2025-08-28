@@ -1,7 +1,6 @@
 package com.scheduler.orderservice.infra.health;
 
 import com.scheduler.orderservice.order.client.MemberServiceClient;
-import com.scheduler.orderservice.order.common.domain.OrderCategory;
 import com.scheduler.orderservice.order.payment.naver.dto.NaverPayResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
