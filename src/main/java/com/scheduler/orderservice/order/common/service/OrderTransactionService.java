@@ -20,10 +20,10 @@ public class OrderTransactionService {
 
     @Transactional
     public CancelOrderEventPayload cancelOrderEvent(
-            String orderId, String memberId, CancelOrderRequest cancelOrderRequest
+            String orderId, String studentId, CancelOrderRequest cancelOrderRequest
     ) {
 
-        Orders orders = ordersJpaRepository.findOrdersByMemberIdAndOrderId(memberId, orderId)
+        Orders orders = ordersJpaRepository.findOrdersByStudentIdAndOrderId(studentId, orderId)
                 .orElseThrow(OrderExistException::new);
 
         String vendorTid = orders.getVendorTid();

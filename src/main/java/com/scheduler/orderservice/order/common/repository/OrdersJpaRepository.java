@@ -9,6 +9,6 @@ import java.util.Optional;
 @Repository
 public interface OrdersJpaRepository extends JpaRepository<Orders, Long> {
 
-    Optional<Orders> findOrdersByMemberIdAndOrderId(String memberId, String orderId);
+    Optional<Orders> findOrdersByStudentIdAndOrderId(String studentId, String orderId);
 
 }

@@ -13,6 +13,7 @@ public class DirectOrderDto {
 
     private String accessToken;
     private String productId;
+    private String productName;
     private Integer quantity;
 
 }
