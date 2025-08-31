@@ -67,4 +67,18 @@ public class NaverPayRequest {
         private String pageNumber;
         private String rowsPerPage;
     }
+
+    @Getter
+    @Setter
+    public static class CancelNaverOrderRequest {
+
+        private String paymentId;
+        private Integer cancelAmount;
+        private String cancelReason;
+        private String cancelRequester;
+        //과세 대상 금액.
+        private Integer taxScopeAmount;
+        //면세 대상 금액.
+        private Integer taxExScopeAmount;
+    }
 }

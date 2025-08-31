@@ -154,20 +154,6 @@ public class NaverPayResponse {
 
     @Getter
     @Setter
-    public static class CancelNaverOrderDto {
-
-        private String paymentId;
-        private Integer cancelAmount;
-        private String cancelReason;
-        private String cancelRequester;
-        //과세 대상 금액.
-        private Integer taxScopeAmount;
-        //면세 대상 금액.
-        private Integer taxExScopeAmount;
-    }
-
-    @Getter
-    @Setter
     public static class NaverCancelOrderResponse {
         private String code;
         private String message;

@@ -1,6 +1,7 @@
 package com.scheduler.orderservice.order.payment.naver.service.component;
 
 import com.scheduler.orderservice.order.common.component.NaverProperties;
+import com.scheduler.orderservice.order.common.event.CancelOrderPayload;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -10,7 +11,6 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
-import static com.scheduler.orderservice.order.payment.naver.dto.NaverPayResponse.CancelNaverOrderDto;
 import static com.scheduler.orderservice.order.payment.naver.dto.NaverPayResponse.NaverCancelOrderResponse;
 
 @Slf4j
@@ -22,15 +22,15 @@ public class CancelNaverOrder {
     private final NaverProperties properties;
     private final NaverHeaders naverHeaders;
 
-    public Mono<NaverCancelOrderResponse> cancelNaverOrderResponse(CancelNaverOrderDto cancelNaverOrderDto) {
+    public Mono<NaverCancelOrderResponse> cancelNaverOrderResponse(CancelOrderPayload payload) {
 
         MultiValueMap<String, String> requestBody = new LinkedMultiValueMap<>();
-        requestBody.add("paymentId", cancelNaverOrderDto.getPaymentId());
-        requestBody.add("cancelAmount", String.valueOf(cancelNaverOrderDto.getCancelAmount()));
-        requestBody.add("cancelReason", cancelNaverOrderDto.getCancelReason());
-        requestBody.add("cancelRequester", cancelNaverOrderDto.getCancelRequester());
-        requestBody.add("taxScopeAmount", String.valueOf(cancelNaverOrderDto.getTaxScopeAmount()));
-        requestBody.add("taxExScopeAmount", String.valueOf(cancelNaverOrderDto.getTaxExScopeAmount()));
+        requestBody.add("paymentId", payload.getVendorTid());
+        requestBody.add("cancelAmount", String.valueOf(payload.getCancelAmount()));
+        requestBody.add("cancelReason", payload.getCancelReason());
+        requestBody.add("cancelRequester", payload.getUsername());
+        requestBody.add("taxScopeAmount", String.valueOf(payload.getTaxAmount()));
+        requestBody.add("taxExScopeAmount", String.valueOf(0));
 
         return webClient.post()
                 .uri(properties.getNaverUrl().getBaseUrl() + "/" +

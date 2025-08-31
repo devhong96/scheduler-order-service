@@ -6,14 +6,14 @@ import com.scheduler.orderservice.order.payment.nicepay.service.NicePayService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import static com.scheduler.orderservice.order.payment.nicepay.dto.NicePayRequest.NicePayCancelOrderRequest;
 import static com.scheduler.orderservice.order.payment.nicepay.dto.NicePayRequest.NicePayPreOrderRequest;
-import static com.scheduler.orderservice.order.payment.nicepay.dto.NicePayResponse.NicePayCancelOrderResponse;
 import static com.scheduler.orderservice.order.payment.nicepay.dto.NicePayResponse.NicePayOrderResponse;
 import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @RequestMapping("/order/nicepay")
@@ -36,11 +36,4 @@ public class NicePayOrderController {
                 nicePayPreOrderRequest), CREATED);
     }
 
-    @Operation(summary = " ")
-    @PostMapping("cancel")
-    public ResponseEntity<NicePayCancelOrderResponse> cancelNicePayOrder(
-            @RequestBody NicePayCancelOrderRequest nicePayCancelOrderRequest
-    ) {
-        return new ResponseEntity<>(nicePayService.cancelNicepayOrder(nicePayCancelOrderRequest), OK);
-    }
 }

@@ -1,7 +1,7 @@
 package com.scheduler.orderservice.order.payment.nicepay.service.component;
 
 import com.scheduler.orderservice.order.common.component.NicePayProperties;
-import com.scheduler.orderservice.order.payment.nicepay.dto.NicePayRequest;
+import com.scheduler.orderservice.order.common.event.CancelOrderPayload;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -10,7 +10,6 @@ import reactor.core.publisher.Mono;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import static com.scheduler.orderservice.order.payment.nicepay.dto.NicePayResponse.NicePayCancelOrderResponse;
 
@@ -23,20 +22,16 @@ public class CancelNicePayOrder {
     private final NicePayProperties properties;
     private final NicePayHeaders nicePayHeaders;
 
-    public Mono<NicePayCancelOrderResponse> cancelNicepayOrder(NicePayRequest.NicePayCancelOrderRequest nicePayCancelOrderRequest) {
-
-        String tid = nicePayCancelOrderRequest.getTid();
-        String reason = nicePayCancelOrderRequest.getReason();
-        String cancelAmt = nicePayCancelOrderRequest.getCancelAmt();
+    public Mono<NicePayCancelOrderResponse> cancelNicepayOrder(CancelOrderPayload payload) {
 
         Map<String, String> requestBody = new HashMap<>();
 
-        requestBody.put("orderId", UUID.randomUUID().toString());
-        requestBody.put("reason", reason);
-        requestBody.put("cancelAmt", cancelAmt);
+        requestBody.put("orderId", payload.getVendorTid());
+        requestBody.put("reason", payload.getCancelReason());
+        requestBody.put("cancelAmt", String.valueOf(payload.getCancelAmount()));
 
         return webClient.post()
-                .uri(properties.getNiceUrl().getPaymentUrl() + "/" + tid + "/cancel")
+                .uri(properties.getNiceUrl().getPaymentUrl() + "/" + payload.getVendorTid() + "/cancel")
                 .headers(header -> header.addAll(nicePayHeaders.getNicePayHeaders()))
                 .bodyValue(requestBody)
                 .retrieve()

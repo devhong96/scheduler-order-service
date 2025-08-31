@@ -5,5 +5,5 @@ import com.scheduler.orderservice.order.common.domain.Vendor;
 public interface CancelOrderGateway {
 
     Vendor getVendor();
-    void refund(CancelOrderEventPayload payload);
+    void refund(CancelOrderPayload payload);
 }

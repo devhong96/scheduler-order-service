@@ -6,13 +6,10 @@ import com.scheduler.orderservice.order.common.domain.OrderType;
 import com.scheduler.orderservice.order.common.domain.Vendor;
 import com.scheduler.orderservice.order.common.dto.CancelOrderRequest;
 import com.scheduler.orderservice.order.common.dto.OrderCheckoutInfo;
-import com.scheduler.orderservice.order.common.event.CancelOrderEventPayload;
-import com.scheduler.orderservice.order.common.event.CreateOrderGateway;
-import com.scheduler.orderservice.order.common.event.CreatePaymentGatewayFactory;
+import com.scheduler.orderservice.order.common.event.*;
 import com.scheduler.orderservice.order.common.service.component.OrderCalculateFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,10 +25,11 @@ public class OrderServiceImpl implements OrderService {
     private final OrderCalculateFactory orderCalculateFactory;
 
     private final CreatePaymentGatewayFactory paymentGatewayFactory;
+    private final CancelPaymentGatewayFactory cancelPaymentGatewayFactory;
 
     private final OrderTransactionService orderTransactionService;
     private final MemberServiceClient memberServiceClient;
-    private final ApplicationEventPublisher eventPublisher;
+
 
     @Override
     @Transactional
@@ -43,9 +41,9 @@ public class OrderServiceImpl implements OrderService {
 
         OrderCheckoutInfo orderCheckoutInfo = orderCalculateFactory.createOrderCalculator(accessToken, orderType, orderCategory, vendor, preOrderRequest);
 
-        CreateOrderGateway orderGateway = paymentGatewayFactory.getVendor(vendor);
+        CreateOrderGateway createOrderGateway = paymentGatewayFactory.getVendor(vendor);
 
-        return orderGateway.createOrder(orderCheckoutInfo);
+        return createOrderGateway.createOrder(orderCheckoutInfo);
     }
 
     @Override
@@ -54,10 +52,12 @@ public class OrderServiceImpl implements OrderService {
     ) {
         StudentResponse studentInfo = memberServiceClient.getStudentInfo(accessToken);
 
-        CancelOrderEventPayload cancelPayload = orderTransactionService
-                .cancelOrderEvent(orderId, studentInfo.getStudentId(), cancelOrderRequest);
+        CancelOrderPayload cancelPayload = orderTransactionService
+                .cancelOrderEvent(orderId, studentInfo, cancelOrderRequest);
 
-        eventPublisher.publishEvent(cancelPayload);
+        CancelOrderGateway cancelOrderGateway = cancelPaymentGatewayFactory.getVendor(cancelPayload.getVendor());
+
+        cancelOrderGateway.refund(cancelPayload);
 
     }
 }

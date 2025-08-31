@@ -8,18 +8,18 @@ import com.scheduler.orderservice.order.common.domain.OrderType;
 import com.scheduler.orderservice.order.common.dto.DirectOrderDto;
 import com.scheduler.orderservice.order.payment.common.CreateOrderProcesserFactory;
 import com.scheduler.orderservice.order.payment.common.CreateOrderProcessor;
-import com.scheduler.orderservice.order.payment.naver.service.component.CancelNaverOrder;
+import com.scheduler.orderservice.order.payment.common.PaymentHistoryDto;
 import com.scheduler.orderservice.order.payment.naver.service.component.CreateNaverOrder;
 import com.scheduler.orderservice.order.payment.naver.service.component.SearchNaverOrder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import static com.scheduler.orderservice.order.client.dto.MemberFeignDto.StudentResponse;
 import static com.scheduler.orderservice.order.common.domain.Vendor.NAVER;
 import static com.scheduler.orderservice.order.payment.naver.dto.NaverPayRequest.SearchNaverOrderHistoryDto;
-import static com.scheduler.orderservice.order.payment.naver.dto.NaverPayResponse.*;
+import static com.scheduler.orderservice.order.payment.naver.dto.NaverPayResponse.NaverOrderResponse;
+import static com.scheduler.orderservice.order.payment.naver.dto.NaverPayResponse.SearchNaverOrderResponse;
 
 @Slf4j
 @Service
@@ -31,10 +31,8 @@ public class NaverOrderServiceImpl implements NaverOrderService {
     private final CreateOrderProcesserFactory factory;
 
     private final CreateNaverOrder createNaverOrder;
-    private final CancelNaverOrder cancelNaverOrder;
     private final SearchNaverOrder searchNaverOrder;
 
-    private final ApplicationEventPublisher eventPublisher;
 
     @Override
     public NaverOrderResponse createNaverOrder(
@@ -42,38 +40,24 @@ public class NaverOrderServiceImpl implements NaverOrderService {
             String orderId,
             String resultCode, String paymentId
     ) {
+        // 장바구니 결제와 즉시 결제 여기서 부터 나눠야 할듯.
         DirectOrderDto directOrder = redisOrderCache.getDirectOrderInfo(orderId);
 
-        StudentResponse studentInfo = memberServiceClient.getStudentInfo(directOrder.getAccessToken());
-
-        String studentId = studentInfo.getStudentId();
-        String username = studentInfo.getUsername();
-        Integer quantity = directOrder.getQuantity();
+        StudentResponse studentResponse = memberServiceClient.getStudentInfo(directOrder.getAccessToken());
 
         NaverOrderResponse response = createNaverOrder.createNaverOrderResponse(resultCode, paymentId)
                 .blockOptional().orElseThrow(PaymentException::new);
 
         CreateOrderProcessor processor = factory.findProcessor(NAVER, orderType);
-        processor.process();
 
-//        applyOrder(orderType, studentId, username, quantity, orderCategory, response);
-
-        return response;
-    }
-
-
-    //TODO 후속 처리
-    @Override
-    public NaverCancelOrderResponse cancelNaverOrder(
-            CancelNaverOrderDto cancelNaverOrderDto
-    ) {
-        NaverCancelOrderResponse response = cancelNaverOrder.cancelNaverOrderResponse(cancelNaverOrderDto)
-                .blockOptional().orElseThrow(PaymentException::new);
-
-        eventPublisher.publishEvent(response);
+        processor.process(orderType, orderCategory, studentResponse, directOrder,
+                PaymentHistoryDto.fromDetail(response.getBody().getDetail())
+        );
 
         return response;
     }
+
+
 
     @Override
     public SearchNaverOrderResponse searchNaverOrder(

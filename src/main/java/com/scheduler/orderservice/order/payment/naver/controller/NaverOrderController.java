@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static com.scheduler.orderservice.order.payment.naver.dto.NaverPayResponse.*;
+import static com.scheduler.orderservice.order.payment.naver.dto.NaverPayResponse.NaverOrderResponse;
 import static org.springframework.http.HttpStatus.CREATED;
 
 @RestController
@@ -32,11 +32,4 @@ public class NaverOrderController {
                 resultCode, paymentId), CREATED);
     }
 
-    @Operation(summary = "네이버 페이. 결제 취소")
-    @PostMapping("cancel-order")
-    public ResponseEntity<NaverCancelOrderResponse> cancelNaverOrder(
-            @RequestBody CancelNaverOrderDto cancelNaverOrderDto
-    ) {
-        return new ResponseEntity<>(naverOrderService.cancelNaverOrder(cancelNaverOrderDto), CREATED);
-    }
 }

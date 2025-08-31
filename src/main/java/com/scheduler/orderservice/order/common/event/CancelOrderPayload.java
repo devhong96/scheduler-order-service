@@ -6,12 +6,13 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class CancelOrderEventPayload implements EventPayload {
+public class CancelOrderPayload implements EventPayload {
 
     private final Vendor vendor;
     private final String vendorTid;
     private final String username;
     private final String cancelReason;
-    private final int cancelAmount;
+    private final Integer cancelAmount;
+    private final Integer taxAmount;
 
 }
