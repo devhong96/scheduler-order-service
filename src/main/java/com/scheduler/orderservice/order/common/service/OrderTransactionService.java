@@ -29,8 +29,16 @@ public class OrderTransactionService {
             String orderId, StudentResponse studentInfo, CancelOrderRequest cancelOrderRequest
     ) {
 
-        List<Orders> ordersList = ordersJpaRepository.findOrdersByPaymentInfo_StudentIdAndPaymentInfo_OrderId(studentInfo.getStudentId(), orderId);
+        List<Orders> ordersList = ordersJpaRepository.findOrdersByStudentIdAndPaymentInfo_OrderId(studentInfo.getStudentId(), orderId);
 
+        if (ordersList.isEmpty()) {
+            throw new RuntimeException("주문을 찾을 수 없습니다.");
+        }
+
+        for (Orders order : ordersList) {
+            order.cancel();
+        }
+        
         Vendor vendor = ordersList.get(0).getVendor();
 
         // 1. 빠른 조회를 위해 취소할 productId 목록을 Set으로 만듭니다.

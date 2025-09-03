@@ -2,7 +2,6 @@ package com.scheduler.orderservice.order.payment.kakao.service;
 
 import com.scheduler.orderservice.order.common.domain.OrderCategory;
 import com.scheduler.orderservice.order.common.domain.OrderType;
-import com.scheduler.orderservice.order.common.dto.CancelOrderRequest;
 
 import static com.scheduler.orderservice.order.payment.kakao.dto.KakaoPayRequest.KakaoPreOrderRequest;
 import static com.scheduler.orderservice.order.payment.kakao.dto.KakaoPayResponse.KakaoApproveOrderResponse;
@@ -17,5 +16,4 @@ public interface KakaoOrderService {
 
     KakaoSearchOrderResponse searchKakaoOrder(String tid);
 
-    void prepareToCancelKakaoOrder(String accessToke, CancelOrderRequest cancelOrderRequest);
 }

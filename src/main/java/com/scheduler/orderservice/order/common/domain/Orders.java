@@ -23,6 +23,8 @@ public class Orders extends BaseEntity {
 
     private String username;
 
+    private String studentId;
+
     @Column(nullable = false)
     private String vendorTid;
 
@@ -58,6 +60,7 @@ public class Orders extends BaseEntity {
         Orders orders = new Orders();
         orders.vendor = vendor;
         orders.username = studentResponse.getUsername();
+        orders.studentId = studentResponse.getStudentId();
         orders.vendorTid = paymentHistoryDto.getTid();
         orders.orderType = orderType;
         orders.orderCategory = orderCategory;

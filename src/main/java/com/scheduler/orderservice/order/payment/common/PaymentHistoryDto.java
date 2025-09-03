@@ -24,7 +24,7 @@ public class PaymentHistoryDto {
     private String cardNumberMasked; // 마스킹된 카드 번호
     private String cardIssuerCode;  // 카드 발급사 코드/이름
     private String merchantId;      // 상점 ID
-    private String studentId;          // 사용자 식별자 (내부 유저 ID)
+    private String merchantUserKey;       // 사용자 식별자 (내부 유저 ID)
     private Integer taxAmount;      // 세금 금액 (VAT)
     private Integer discountAmount; // 할인 금액
 
@@ -41,7 +41,7 @@ public class PaymentHistoryDto {
         dto.setCardNumberMasked(detail.getCardNo());
         dto.setCardIssuerCode(detail.getCardCorpCode());
         dto.setMerchantId(detail.getMerchantId());
-        dto.setStudentId(detail.getUserIdentifier() != null ? detail.getUserIdentifier() : detail.getMerchantUserKey());
+        dto.setMerchantUserKey(detail.getUserIdentifier() != null ? detail.getUserIdentifier() : detail.getMerchantUserKey());
         dto.setTaxAmount(detail.getTaxScopeAmount());
         dto.setDiscountAmount(detail.getDiscountPayAmount());
         return dto;
@@ -60,7 +60,7 @@ public class PaymentHistoryDto {
         dto.setCardNumberMasked(response.getCard() != null ? response.getCard().getCardNum() : null);
         dto.setCardIssuerCode(response.getCard() != null ? response.getCard().getCardCode() != null ? response.getCard().getCardCode() : response.getCard().getCardName() : null);
         dto.setMerchantId(null); // 직접 매핑 없음, 필요시 mallReserved 등에서 유추
-        dto.setStudentId(response.getMallUserId());
+        dto.setMerchantUserKey(response.getMallUserId());
         dto.setTaxAmount(null); // 직접 없음, amount에서 계산 가능하나 생략
         dto.setDiscountAmount(null); // coupon 등에서 유추 가능하나 생략
         return dto;
@@ -79,7 +79,7 @@ public class PaymentHistoryDto {
         dto.setCardNumberMasked(null); // 직접 없음, bin으로 유추 가능하나 생략
         dto.setCardIssuerCode(response.getCardInfo() != null ? response.getCardInfo().getKakaopayIssuerCorpCode() != null ? response.getCardInfo().getKakaopayIssuerCorpCode() : response.getCardInfo().getKakaopayIssuerCorp() : null);
         dto.setMerchantId(response.getCid());
-        dto.setStudentId(response.getPartner_user_id());
+        dto.setMerchantUserKey(response.getPartner_user_id());
         dto.setTaxAmount(response.getAmount() != null ? response.getAmount().getVat() : null);
         dto.setDiscountAmount(response.getAmount() != null ? response.getAmount().getDiscount() : null);
         return dto;

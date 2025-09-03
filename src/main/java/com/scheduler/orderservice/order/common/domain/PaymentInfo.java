@@ -25,7 +25,6 @@ public class PaymentInfo {
     private String cardNumberMasked; // 마스킹된 카드 번호
     private String cardIssuerCode;  // 카드 발급사 코드/이름
     private String merchantId;      // 상점 ID
-    private String studentId;        // 사용자 식별자 (내부 유저 ID)
     private Integer taxAmount;      // 세금 금액 (VAT)
     private Integer discountAmount; // 할인 금액
 
@@ -41,7 +40,6 @@ public class PaymentInfo {
         paymentInfo.cardNumberMasked = paymentHistoryDto.getCardNumberMasked();
         paymentInfo.cardIssuerCode = paymentHistoryDto.getCardIssuerCode();
         paymentInfo.merchantId = paymentHistoryDto.getMerchantId();
-        paymentInfo.studentId = paymentHistoryDto.getStudentId();
         paymentInfo.taxAmount = paymentHistoryDto.getTaxAmount();
         paymentInfo.discountAmount = paymentHistoryDto.getDiscountAmount();
 
@@ -60,7 +58,6 @@ public class PaymentInfo {
         paymentHistoryDto.setCardNumberMasked(this.cardNumberMasked);
         paymentHistoryDto.setCardIssuerCode(this.cardIssuerCode);
         paymentHistoryDto.setMerchantId(this.merchantId);
-        paymentHistoryDto.setStudentId(this.studentId);
         paymentHistoryDto.setTaxAmount(this.taxAmount);
         paymentHistoryDto.setDiscountAmount(this.discountAmount);
         return paymentHistoryDto;
@@ -80,13 +77,12 @@ public class PaymentInfo {
                 && Objects.equals(cardNumberMasked, that.cardNumberMasked)
                 && Objects.equals(cardIssuerCode, that.cardIssuerCode)
                 && Objects.equals(merchantId, that.merchantId)
-                && Objects.equals(studentId, that.studentId)
                 && Objects.equals(taxAmount, that.taxAmount)
                 && Objects.equals(discountAmount, that.discountAmount);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(tid, orderId, totalAmount, paymentMethod, paymentStatus, approvalNumber, paymentDateTime, cardNumberMasked, cardIssuerCode, merchantId, studentId, taxAmount, discountAmount);
+        return Objects.hash(tid, orderId, totalAmount, paymentMethod, paymentStatus, approvalNumber, paymentDateTime, cardNumberMasked, cardIssuerCode, merchantId, taxAmount, discountAmount);
     }
 }

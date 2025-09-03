@@ -5,7 +5,6 @@ import com.scheduler.orderservice.order.client.MemberServiceClient;
 import com.scheduler.orderservice.order.common.component.RedisOrderCache;
 import com.scheduler.orderservice.order.common.domain.OrderCategory;
 import com.scheduler.orderservice.order.common.domain.OrderType;
-import com.scheduler.orderservice.order.common.dto.CancelOrderRequest;
 import com.scheduler.orderservice.order.common.dto.DirectOrderDto;
 import com.scheduler.orderservice.order.common.dto.KakaoDto;
 import com.scheduler.orderservice.order.payment.common.CreateOrderProcesserFactory;
@@ -96,49 +95,4 @@ public class KakaoOrderServiceImpl implements KakaoOrderService {
         return getKakaoOrder.getKakaoOrderResponse(tid)
                 .blockOptional().orElseThrow(PaymentException::new);
     }
-
-    @Override
-    public void prepareToCancelKakaoOrder(String accessToken, CancelOrderRequest preRequest) {
-
-        //TODO 엔티티 내역
-//        StudentResponse studentInfo = memberServiceClient.getStudentInfo(accessToken);
-//        String username = studentInfo.getUsername();
-//        String memberId = studentInfo.getStudentId();
-//
-//        List<SingleCancelOrder> singleCancelOrders = preRequest.getSingleCancelOrders();
-//        String refundReason = preRequest.getRefundReason();
-//
-//        String vendorTid = "";
-//        int cancelAmount = 0;
-//
-//        List<CancelOrderInfoResponse> orderList = new ArrayList<>();
-//
-//        for(SingleCancelOrder singleCancelOrder : singleCancelOrders) {
-//
-//            String orderId = singleCancelOrder.getOrderId();
-//            String productId = singleCancelOrder.getProductId();
-//
-//            orderList.add(preCancelOrderInfoResponse);
-//
-//            vendorTid = preCancelOrderInfoResponse.getVendorTid();
-//            cancelAmount += preCancelOrderInfoResponse.getCancelAmount();
-//        }
-//
-//        KakaoCancelOrderDto.CancelOrderRequest cancelOrderRequest = KakaoCancelOrderDto.CancelOrderRequest.builder()
-//                .cid(kakaoProperties.getKakaoClient().getCid())
-//                .tid(vendorTid)
-//                .cancelAmount(cancelAmount)
-//                .cancelTaxFreeAmount(0)
-//                .cancelVatAmount((int) (cancelAmount * 0.1))
-//                .cancelAvailableAmount(cancelAmount)
-//                .build();
-//
-//        CancelOrderResponse cancelOrderResponse = cancelKakaoOrder.cancelKakaoOrder(cancelOrderRequest)
-//                .blockOptional().orElseThrow(PaymentException::new);
-//
-//        //주문 취소
-//        eventPublisher.publishEvent(new CancelOrderEvent(this, memberId, username, refundReason,
-//                orderList, cancelOrderResponse));
-    }
-
 }

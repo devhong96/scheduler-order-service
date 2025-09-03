@@ -2,7 +2,6 @@ package com.scheduler.orderservice.order.payment.kakao.controller;
 
 import com.scheduler.orderservice.order.common.domain.OrderCategory;
 import com.scheduler.orderservice.order.common.domain.OrderType;
-import com.scheduler.orderservice.order.common.dto.CancelOrderRequest;
 import com.scheduler.orderservice.order.payment.kakao.service.KakaoOrderService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import static com.scheduler.orderservice.order.payment.kakao.dto.KakaoPayResponse.KakaoApproveOrderResponse;
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.BAD_GATEWAY;
 import static org.springframework.http.HttpStatus.OK;
 
@@ -41,13 +39,4 @@ public class KakaoOrderController {
         return new ResponseEntity<>(BAD_GATEWAY);
     }
 
-    @Operation(summary = "결제 취소")
-    @PostMapping("cancel")
-    public ResponseEntity<Void> kakaoOrderCancel(
-            @RequestHeader(AUTHORIZATION) String accessToken,
-            @RequestBody CancelOrderRequest cancelOrderPreRequest
-    ) {
-        kakaoOrderService.prepareToCancelKakaoOrder(accessToken, cancelOrderPreRequest);
-        return new ResponseEntity<>(BAD_GATEWAY);
-    }
 }
