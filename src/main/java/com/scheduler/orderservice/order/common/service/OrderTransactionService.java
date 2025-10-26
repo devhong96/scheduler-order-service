@@ -1,15 +1,19 @@
 package com.scheduler.orderservice.order.common.service;
 
+import com.scheduler.orderservice.order.common.domain.OrderItems;
 import com.scheduler.orderservice.order.common.domain.Orders;
 import com.scheduler.orderservice.order.common.domain.Vendor;
 import com.scheduler.orderservice.order.common.dto.CancelOrderRequest;
 import com.scheduler.orderservice.order.common.event.CancelOrderPayload;
+import com.scheduler.orderservice.order.common.repository.OrderItemJpaRepository;
 import com.scheduler.orderservice.order.common.repository.OrdersJpaRepository;
+import jakarta.persistence.EntityExistsException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -22,6 +26,7 @@ import static com.scheduler.orderservice.order.common.dto.CancelOrderRequest.Sin
 @RequiredArgsConstructor
 public class OrderTransactionService {
 
+    private final OrderItemJpaRepository orderItemsJpaRepository;
     private final OrdersJpaRepository ordersJpaRepository;
 
     @Transactional
@@ -29,17 +34,30 @@ public class OrderTransactionService {
             String orderId, StudentResponse studentInfo, CancelOrderRequest cancelOrderRequest
     ) {
 
-        List<Orders> ordersList = ordersJpaRepository.findOrdersByStudentIdAndPaymentInfo_OrderId(studentInfo.getStudentId(), orderId);
+        Orders orders = ordersJpaRepository.findOrdersByOrderId(orderId)
+                .orElseThrow(EntityExistsException::new);
+
+        List<SingleCancelOrder> singleCancelOrders = cancelOrderRequest.getSingleCancelOrders();
+
+        List<OrderItems> ordersList = new ArrayList<>();
+
+        for (SingleCancelOrder singleCancelOrder : singleCancelOrders) {
+
+            ordersList.addAll(orderItemsJpaRepository
+                    .findOrderItemsByOrderIdAndProductId(orderId, singleCancelOrder.getProductId()));
+        }
 
         if (ordersList.isEmpty()) {
             throw new RuntimeException("주문을 찾을 수 없습니다.");
         }
 
-        for (Orders order : ordersList) {
-            order.cancel();
+        for (OrderItems orderItems : ordersList) {
+            orderItems.cancel();
         }
         
-        Vendor vendor = ordersList.get(0).getVendor();
+        Vendor vendor = orders.getVendor();
+
+        //TODO amountToCancel, taxToCancel
 
         // 1. 빠른 조회를 위해 취소할 productId 목록을 Set으로 만듭니다.
         Set<String> productIdsToCancel = cancelOrderRequest.getSingleCancelOrders().stream()
@@ -47,16 +65,9 @@ public class OrderTransactionService {
                 .collect(Collectors.toSet());
 
         // 2. DB에서 가져온 주문 목록에서 취소할 productId를 가진 주문만 필터링하고 합산합니다.
-        int amountToCancel = ordersList.stream()
-                // 취소 요청 Set에 포함된 productId만 필터링합니다.
-                .filter(order -> productIdsToCancel.contains(order.getProductId()))
-                .mapToInt(order -> order.getPaymentInfo().getTotalAmount())
-                .sum();
+        int amountToCancel = 0;
 
-        int taxToCancel = ordersList.stream()
-                .filter(order -> productIdsToCancel.contains(order.getProductId()))
-                .mapToInt(order -> order.getPaymentInfo().getTaxAmount())
-                .sum();
+        int taxToCancel = 0;
 
         // 사용자가 요청한 취소 금액의 합계 (검증용)
         int requestedCancelAmount = cancelOrderRequest.getSingleCancelOrders().stream()

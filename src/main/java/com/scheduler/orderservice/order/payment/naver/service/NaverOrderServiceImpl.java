@@ -14,6 +14,7 @@ import com.scheduler.orderservice.order.payment.naver.service.component.SearchNa
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
 import static com.scheduler.orderservice.order.client.dto.MemberFeignDto.StudentResponse;
 import static com.scheduler.orderservice.order.common.domain.Vendor.NAVER;
@@ -35,7 +36,7 @@ public class NaverOrderServiceImpl implements NaverOrderService {
 
 
     @Override
-    public NaverOrderResponse createNaverOrder(
+    public Mono<NaverOrderResponse> createNaverOrder(
             OrderType orderType, OrderCategory orderCategory,
             String orderId,
             String resultCode, String paymentId
@@ -45,16 +46,21 @@ public class NaverOrderServiceImpl implements NaverOrderService {
 
         StudentResponse studentResponse = memberServiceClient.getStudentInfo(directOrder.getAccessToken());
 
-        NaverOrderResponse response = createNaverOrder.createNaverOrderResponse(resultCode, paymentId)
-                .blockOptional().orElseThrow(PaymentException::new);
+        return createNaverOrder.createNaverOrderResponse(resultCode, paymentId)
+                .flatMap(response -> {
 
-        CreateOrderProcessor processor = factory.findProcessor(NAVER, orderType);
+                    // 이 블록은 Naver API 응답이 성공적으로 왔을 때 실행됩니다.
+                    CreateOrderProcessor processor = factory.findProcessor(NAVER, orderType);
 
-        processor.process(orderType, orderCategory, studentResponse, directOrder,
-                PaymentHistoryDto.fromDetail(response.getBody().getDetail())
-        );
+                    processor.process(orderId, orderType, orderCategory, studentResponse,
+                            directOrder,
+                            PaymentHistoryDto.fromDetail(response.getBody().getDetail()));
 
-        return response;
+                    // processor.process가 동기 메서드라도, 리액티브 체인 안에서 실행되므로
+                    // 기존 요청 스레드를 block하지 않습니다.
+                    // 처리 완료 후 원래의 response를 계속해서 아래로 전달합니다.
+                    return Mono.just(response);
+                });
     }
 
 

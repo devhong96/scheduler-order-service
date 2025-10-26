@@ -46,14 +46,12 @@ public class NicePayServiceImpl implements NicePayService {
 
         StudentResponse studentResponse = memberServiceClient.getStudentInfo(directOrder.getAccessToken());
 
-
         NicePayOrderResponse response = createNicePayOrder.createNicePayOrder(niceRequest)
                 .blockOptional().orElseThrow(PaymentException::new);
 
         CreateOrderProcessor processor = factory.findProcessor(NICEPAY, orderType);
 
-        processor.process(orderType, orderCategory, studentResponse, directOrder, PaymentHistoryDto.fromNicePay(response));
-
+        processor.process(orderId, orderType, orderCategory, studentResponse, directOrder, PaymentHistoryDto.fromNicePay(response));
 
         return response;
 

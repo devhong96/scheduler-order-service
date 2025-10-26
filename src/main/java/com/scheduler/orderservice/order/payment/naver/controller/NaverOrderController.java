@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 import static com.scheduler.orderservice.order.payment.naver.dto.NaverPayResponse.NaverOrderResponse;
 import static org.springframework.http.HttpStatus.CREATED;
@@ -20,7 +21,7 @@ public class NaverOrderController {
 
     @Operation(summary = "네이버 페이. 바로 결제, 장바구니 결제 포함. 프론트 사용 X")
     @GetMapping("{orderType}/{orderCategory}/{orderId}")
-    public ResponseEntity<NaverOrderResponse> createNaverOrder(
+    public ResponseEntity<Mono<NaverOrderResponse>> createNaverOrder(
             @PathVariable String orderType,
             @PathVariable String orderCategory,
             @PathVariable String orderId,

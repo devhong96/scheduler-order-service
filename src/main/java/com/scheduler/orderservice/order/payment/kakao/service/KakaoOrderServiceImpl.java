@@ -83,7 +83,7 @@ public class KakaoOrderServiceImpl implements KakaoOrderService {
 
         CreateOrderProcessor processor = factory.findProcessor(KAKAO, orderType);
 
-        processor.process(orderType, orderCategory, studentResponse, directOrderDto, PaymentHistoryDto.fromKakao(response));
+        processor.process(orderId, orderType, orderCategory, studentResponse, directOrderDto, PaymentHistoryDto.fromKakao(response));
 
         return response;
     }

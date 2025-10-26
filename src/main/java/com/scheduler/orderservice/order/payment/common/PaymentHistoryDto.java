@@ -15,7 +15,6 @@ import static com.scheduler.orderservice.order.payment.nicepay.dto.NicePayRespon
 public class PaymentHistoryDto {
 
     private String tid;             // PG사 고유 거래 ID (TID)
-    private String orderId;         // 내부 주문 ID
     private Integer totalAmount;        // 총 결제 금액
     private String paymentMethod;   // 결제 수단 (카드, 계좌 등)
     private String paymentStatus;   // 결제 상태 (승인, 취소 등)
@@ -32,7 +31,6 @@ public class PaymentHistoryDto {
     public static PaymentHistoryDto fromDetail(Detail detail) {
         PaymentHistoryDto dto = new PaymentHistoryDto();
         dto.setTid(detail.getPayHistId() != null ? detail.getPayHistId() : detail.getMerchantPayKey());
-        dto.setOrderId(detail.getMerchantPayKey() != null ? detail.getMerchantPayKey() : detail.getMerchantUserKey());
         dto.setTotalAmount(detail.getTotalPayAmount());
         dto.setPaymentMethod(detail.getPrimaryPayMeans());
         dto.setPaymentStatus(detail.getAdmissionState());
@@ -51,7 +49,6 @@ public class PaymentHistoryDto {
     public static PaymentHistoryDto fromNicePay(NicePayOrderResponse response) {
         PaymentHistoryDto dto = new PaymentHistoryDto();
         dto.setTid(response.getTid());
-        dto.setOrderId(response.getOrderId());
         dto.setTotalAmount(response.getAmount());
         dto.setPaymentMethod(response.getPayMethod());
         dto.setPaymentStatus(response.getStatus());
@@ -70,7 +67,6 @@ public class PaymentHistoryDto {
     public static PaymentHistoryDto fromKakao(KakaoApproveOrderResponse response) {
         PaymentHistoryDto dto = new PaymentHistoryDto();
         dto.setTid(response.getTid());
-        dto.setOrderId(response.getPartner_order_id());
         dto.setTotalAmount(response.getAmount() != null ? response.getAmount().getTotal() : null);
         dto.setPaymentMethod(response.getPayment_method_type());
         dto.setPaymentStatus(response.getApproved_at() != null ? "approved" : null); // 유추

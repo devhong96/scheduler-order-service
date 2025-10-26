@@ -11,6 +11,6 @@ public interface CreateOrderProcessor {
 
     Boolean supports(Vendor vendor, OrderType orderType);
 
-    void process(OrderType orderType, OrderCategory orderCategory, StudentResponse studentResponse,
+    void process(String orderId, OrderType orderType, OrderCategory orderCategory, StudentResponse studentResponse,
                  DirectOrderDto directOrderDto, PaymentHistoryDto paymentHistoryDto);
 }

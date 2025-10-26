@@ -16,7 +16,6 @@ import static lombok.AccessLevel.PROTECTED;
 public class PaymentInfo {
 
     private String tid;             // PG사 고유 거래 ID (TID)
-    private String orderId;         // 내부 주문 ID
     private Integer totalAmount;    // 총 결제 금액
     private String paymentMethod;   // 결제 수단 (카드, 계좌 등)
     private String paymentStatus;   // 결제 상태 (승인, 취소 등)
@@ -31,7 +30,6 @@ public class PaymentInfo {
     public static PaymentInfo from(PaymentHistoryDto paymentHistoryDto) {
         PaymentInfo paymentInfo = new PaymentInfo();
         paymentInfo.tid = paymentHistoryDto.getTid();
-        paymentInfo.orderId = paymentHistoryDto.getOrderId();
         paymentInfo.totalAmount = paymentHistoryDto.getTotalAmount();
         paymentInfo.paymentMethod = paymentHistoryDto.getPaymentMethod();
         paymentInfo.paymentStatus = paymentHistoryDto.getPaymentStatus();
@@ -49,7 +47,6 @@ public class PaymentInfo {
     public PaymentHistoryDto toDto() {
         PaymentHistoryDto paymentHistoryDto = new PaymentHistoryDto();
         paymentHistoryDto.setTid(this.tid);
-        paymentHistoryDto.setOrderId(this.orderId);
         paymentHistoryDto.setTotalAmount(this.totalAmount);
         paymentHistoryDto.setPaymentMethod(this.paymentMethod);
         paymentHistoryDto.setPaymentStatus(this.paymentStatus);
@@ -68,7 +65,6 @@ public class PaymentInfo {
         if (o == null || getClass() != o.getClass()) return false;
         PaymentInfo that = (PaymentInfo) o;
         return Objects.equals(tid, that.tid)
-                && Objects.equals(orderId, that.orderId)
                 && Objects.equals(totalAmount, that.totalAmount)
                 && Objects.equals(paymentMethod, that.paymentMethod)
                 && Objects.equals(paymentStatus, that.paymentStatus)
@@ -83,6 +79,6 @@ public class PaymentInfo {
 
     @Override
     public int hashCode() {
-        return Objects.hash(tid, orderId, totalAmount, paymentMethod, paymentStatus, approvalNumber, paymentDateTime, cardNumberMasked, cardIssuerCode, merchantId, taxAmount, discountAmount);
+        return Objects.hash(tid, totalAmount, paymentMethod, paymentStatus, approvalNumber, paymentDateTime, cardNumberMasked, cardIssuerCode, merchantId, taxAmount, discountAmount);
     }
 }

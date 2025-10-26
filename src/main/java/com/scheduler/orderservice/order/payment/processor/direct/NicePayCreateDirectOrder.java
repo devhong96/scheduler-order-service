@@ -1,10 +1,8 @@
 package com.scheduler.orderservice.order.payment.processor.direct;
 
-import com.scheduler.orderservice.order.common.domain.OrderCategory;
-import com.scheduler.orderservice.order.common.domain.OrderType;
-import com.scheduler.orderservice.order.common.domain.Orders;
-import com.scheduler.orderservice.order.common.domain.Vendor;
+import com.scheduler.orderservice.order.common.domain.*;
 import com.scheduler.orderservice.order.common.dto.DirectOrderDto;
+import com.scheduler.orderservice.order.common.repository.OrderItemJpaRepository;
 import com.scheduler.orderservice.order.common.repository.OrdersJpaRepository;
 import com.scheduler.orderservice.order.payment.common.CreateOrderProcessor;
 import com.scheduler.orderservice.order.payment.common.PaymentHistoryDto;
@@ -21,6 +19,7 @@ import static com.scheduler.orderservice.order.common.domain.Vendor.NICEPAY;
 public class NicePayCreateDirectOrder implements CreateOrderProcessor {
 
     private final OrdersJpaRepository ordersJpaRepository;
+    private final OrderItemJpaRepository orderItemJpaRepository;
 
     @Override
     public Boolean supports(Vendor vendor, OrderType orderType) {
@@ -29,13 +28,14 @@ public class NicePayCreateDirectOrder implements CreateOrderProcessor {
 
     @Override
     @Transactional
-    public void process(OrderType orderType, OrderCategory orderCategory, StudentResponse studentResponse,
+    public void process(String orderId, OrderType orderType, OrderCategory orderCategory, StudentResponse studentResponse,
                         DirectOrderDto directOrderDto, PaymentHistoryDto paymentHistoryDto
     ) {
-        Orders orders = Orders.create(NICEPAY, DIRECT, orderCategory, studentResponse,
-                directOrderDto.getProductId(), directOrderDto.getProductName(), directOrderDto.getQuantity(),
-                paymentHistoryDto);
+        OrderItems orderItems = OrderItems.create(orderId, orderType,
+                orderCategory, directOrderDto.getProductId(), directOrderDto.getProductName(), directOrderDto.getQuantity());
+        orderItemJpaRepository.save(orderItems);
 
+        Orders orders = Orders.create(orderId, NICEPAY, studentResponse, paymentHistoryDto);
         ordersJpaRepository.save(orders);
 
     }

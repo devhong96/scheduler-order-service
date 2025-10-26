@@ -3,11 +3,9 @@ package com.scheduler.orderservice.order.payment.processor.cart;
 import com.scheduler.orderservice.cart.dto.CartDto;
 import com.scheduler.orderservice.cart.repository.CartJpaRepository;
 import com.scheduler.orderservice.cart.repository.CartRepository;
-import com.scheduler.orderservice.order.common.domain.OrderCategory;
-import com.scheduler.orderservice.order.common.domain.OrderType;
-import com.scheduler.orderservice.order.common.domain.Orders;
-import com.scheduler.orderservice.order.common.domain.Vendor;
+import com.scheduler.orderservice.order.common.domain.*;
 import com.scheduler.orderservice.order.common.dto.DirectOrderDto;
+import com.scheduler.orderservice.order.common.repository.OrderItemJpaRepository;
 import com.scheduler.orderservice.order.common.repository.OrdersJpaRepository;
 import com.scheduler.orderservice.order.payment.common.CreateOrderProcessor;
 import com.scheduler.orderservice.order.payment.common.PaymentHistoryDto;
@@ -29,6 +27,7 @@ public class NICEPayCreateCartOrder implements CreateOrderProcessor {
     private final CartRepository cartRepository;
     private final CartJpaRepository cartJpaRepository;
     private final OrdersJpaRepository ordersJpaRepository;
+    private final OrderItemJpaRepository orderItemJpaRepository;
 
     @Override
     public Boolean supports(Vendor vendor, OrderType orderType) {
@@ -37,21 +36,22 @@ public class NICEPayCreateCartOrder implements CreateOrderProcessor {
 
     @Override
     @Transactional
-    public void process(OrderType orderType, OrderCategory orderCategory, StudentResponse studentResponse,
+    public void process(String orderId, OrderType orderType, OrderCategory orderCategory, StudentResponse studentResponse,
                         DirectOrderDto directOrderDto, PaymentHistoryDto paymentHistoryDto
     ) {
         List<CartDto> cartDtoByStudentId = cartRepository.getCartDtoByStudentId(studentResponse.getStudentId(), true);
 
-        List<Orders> ordersList = new ArrayList<>();
+        Orders orders = Orders.create(orderId, NICEPAY, studentResponse, paymentHistoryDto);
+
+        List<OrderItems> orderItemsList = new ArrayList<>();
 
         for (CartDto cartDto : cartDtoByStudentId) {
-            ordersList.add(Orders.create(NICEPAY, CART, orderCategory, studentResponse,
-                    cartDto.getProductId(), cartDto.getProductName(), cartDto.getQuantity(),
-                    paymentHistoryDto)
-            );
+            orderItemsList.add(OrderItems.create(orderId, CART, orderCategory, cartDto.getProductId(), cartDto.getProductName(), cartDto.getQuantity()));
         }
 
-        ordersJpaRepository.saveAll(ordersList);
+        orderItemJpaRepository.saveAll(orderItemsList);
+        ordersJpaRepository.save(orders);
+
         cartJpaRepository.deleteByStudentIdAndChecked(studentResponse.getStudentId(), true);
 
     }

@@ -3,7 +3,7 @@ package com.scheduler.orderservice.order.common.domain;
 import com.scheduler.orderservice.order.payment.common.PaymentHistoryDto;
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.NoArgsConstructor;
 
 import static com.scheduler.orderservice.order.client.dto.MemberFeignDto.StudentResponse;
 import static com.scheduler.orderservice.order.common.domain.OrderStatus.CANCELED;
@@ -14,7 +14,7 @@ import static lombok.AccessLevel.PROTECTED;
 
 @Entity
 @Getter
-@RequiredArgsConstructor(access = PROTECTED)
+@NoArgsConstructor(access = PROTECTED)
 public class Orders extends BaseEntity {
 
     @Id
@@ -25,23 +25,13 @@ public class Orders extends BaseEntity {
 
     private String studentId;
 
+    private String orderId;
+
     @Column(nullable = false)
     private String vendorTid;
 
     @Enumerated(STRING)
     private Vendor vendor;
-
-    @Enumerated(STRING)
-    private OrderType orderType;
-
-    @Enumerated(STRING)
-    private OrderCategory orderCategory;
-
-    private String productId;
-
-    private String productName;
-
-    private Integer quantity;
 
     @Enumerated(STRING)
     private OrderStatus orderStatus;
@@ -52,21 +42,16 @@ public class Orders extends BaseEntity {
     @Embedded
     private CancellationInfo cancellationInfo;
 
-    public static Orders create(Vendor vendor, OrderType orderType, OrderCategory orderCategory,
+    public static Orders create(String orderId, Vendor vendor,
                                 StudentResponse studentResponse,
-                                String productId, String productName, Integer quantity,
                                 PaymentHistoryDto paymentHistoryDto
     ) {
         Orders orders = new Orders();
+        orders.orderId = orderId;
         orders.vendor = vendor;
         orders.username = studentResponse.getUsername();
         orders.studentId = studentResponse.getStudentId();
         orders.vendorTid = paymentHistoryDto.getTid();
-        orders.orderType = orderType;
-        orders.orderCategory = orderCategory;
-        orders.productId = productId;
-        orders.productName = productName;
-        orders.quantity = quantity;
         orders.orderStatus = PAYMENT_COMPLETED;
         orders.paymentInfo = PaymentInfo.from(paymentHistoryDto);
 
