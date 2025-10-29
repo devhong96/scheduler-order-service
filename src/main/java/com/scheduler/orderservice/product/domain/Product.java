@@ -1,10 +1,7 @@
 package com.scheduler.orderservice.product.domain;
 
 import com.scheduler.orderservice.product.exception.InvalidCostException;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -26,10 +23,13 @@ public class Product extends BaseEntity {
     @Enumerated(STRING)
     private ProductCategory productType;
 
+    @Column(nullable = false)
     private String productName;
 
+    @Column(nullable = false)
     private Integer cost;
 
+    @Column(nullable = false)
     private Boolean status;
 
     public static Product create(String productName, Integer cost) {

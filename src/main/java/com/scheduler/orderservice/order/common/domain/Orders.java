@@ -1,6 +1,5 @@
 package com.scheduler.orderservice.order.common.domain;
 
-import com.scheduler.orderservice.order.payment.common.PaymentHistoryDto;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,10 +20,13 @@ public class Orders extends BaseEntity {
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String username;
 
+    @Column(nullable = false)
     private String studentId;
 
+    @Column(nullable = false)
     private String orderId;
 
     @Column(nullable = false)
@@ -37,24 +39,18 @@ public class Orders extends BaseEntity {
     private OrderStatus orderStatus;
 
     @Embedded
-    private PaymentInfo paymentInfo;
-
-    @Embedded
     private CancellationInfo cancellationInfo;
 
-    public static Orders create(String orderId, Vendor vendor,
-                                StudentResponse studentResponse,
-                                PaymentHistoryDto paymentHistoryDto
+    public static Orders create(String orderId, Vendor vendor, String vendorTid,
+                                StudentResponse studentResponse
     ) {
         Orders orders = new Orders();
         orders.orderId = orderId;
         orders.vendor = vendor;
         orders.username = studentResponse.getUsername();
         orders.studentId = studentResponse.getStudentId();
-        orders.vendorTid = paymentHistoryDto.getTid();
+        orders.vendorTid = vendorTid;
         orders.orderStatus = PAYMENT_COMPLETED;
-        orders.paymentInfo = PaymentInfo.from(paymentHistoryDto);
-
         return orders;
     }
 

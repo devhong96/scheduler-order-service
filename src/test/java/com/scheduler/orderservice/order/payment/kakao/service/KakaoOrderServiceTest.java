@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static com.scheduler.orderservice.order.client.dto.MemberFeignDto.StudentResponse;
 import static com.scheduler.orderservice.order.common.domain.OrderCategory.TUITION;
 import static com.scheduler.orderservice.order.payment.kakao.dto.KakaoPayRequest.KakaoPreOrderRequest;
@@ -53,6 +54,28 @@ class KakaoOrderServiceTest {
 
         when(memberServiceClient.getStudentInfo(accessToken)).thenReturn(studentInfo);
 
+        String expectedKakaoApiResponse = """
+        {
+            "next_redirect_app_url": https://.../mobile-app/pg/one-time/payment,
+            "next_redirect_mobile_url": https://.../mobile-web/pg/one-time/payment,
+            "next_redirect_pc_url": https://.../pc/pg/one-time/payment"
+        }
+        """;
+
+        wireMockServer.stubFor(post(urlEqualTo("https://open-api.kakaopay.com/online/v1/payment/ready"))
+                .withHeader("Authorization", matching("KakaoAK .*"))
+                .withHeader("Content-Type", equalTo("application/x-www-form-urlencoded;charset=UTF-8"))
+
+                .withRequestBody(containing("partner_order_id=TEST_ORDER123"))
+                .withRequestBody(containing("item_name=Test Item"))
+                .withRequestBody(containing("total_amount=1000"))
+                .withRequestBody(containing("approval_url="))
+
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", "application/json")
+                        .withBody(expectedKakaoApiResponse)));
+
         KakaoPreOrderRequest request = KakaoPreOrderRequest.builder()
                 .itemCode("ITEM123")
                 .partnerOrderId("TEST_ORDER123")
@@ -66,6 +89,7 @@ class KakaoOrderServiceTest {
                 .build();
 
         KakaoPreOrderResponse response = kakaoOrderService.kakaoPreOrder(accessToken, request);
+
 
         assertThat(response.getTid()).isNotNull();
 

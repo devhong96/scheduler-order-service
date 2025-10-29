@@ -4,6 +4,7 @@ import com.scheduler.orderservice.order.common.domain.*;
 import com.scheduler.orderservice.order.common.dto.DirectOrderDto;
 import com.scheduler.orderservice.order.common.repository.OrderItemJpaRepository;
 import com.scheduler.orderservice.order.common.repository.OrdersJpaRepository;
+import com.scheduler.orderservice.order.common.repository.PaymentJpaRepository;
 import com.scheduler.orderservice.order.payment.common.CreateOrderProcessor;
 import com.scheduler.orderservice.order.payment.common.PaymentHistoryDto;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ public class NaverCreateDirectOrder implements CreateOrderProcessor {
 
     private final OrdersJpaRepository ordersJpaRepository;
     private final OrderItemJpaRepository orderItemJpaRepository;
+    private final PaymentJpaRepository paymentJpaRepository;
 
     @Override
     public Boolean supports(Vendor vendor, OrderType orderType) {
@@ -35,7 +37,8 @@ public class NaverCreateDirectOrder implements CreateOrderProcessor {
                 orderCategory, directOrderDto.getProductId(), directOrderDto.getProductName(), directOrderDto.getQuantity());
         orderItemJpaRepository.save(orderItems);
 
-        Orders orders = Orders.create(orderId, NAVER, studentResponse, paymentHistoryDto);
+        Orders orders = Orders.create(orderId, NAVER, paymentHistoryDto.getTid(), studentResponse);
+        paymentJpaRepository.save(PaymentInfo.create(paymentHistoryDto));
         ordersJpaRepository.save(orders);
 
     }

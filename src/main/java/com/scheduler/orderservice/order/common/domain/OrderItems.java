@@ -1,9 +1,6 @@
 package com.scheduler.orderservice.order.common.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -22,20 +19,27 @@ public class OrderItems {
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String orderId;
 
     @Enumerated(STRING)
+    @Column(nullable = false)
     private OrderType orderType;
 
     @Enumerated(STRING)
+    @Column(nullable = false)
     private OrderCategory orderCategory;
 
+    @Column(nullable = false)
     private String productId;
 
+    @Column(nullable = false)
     private String productName;
 
+    @Column(nullable = false)
     private Integer price;
 
+    @Column(nullable = false)
     private Integer quantity;
 
     @Enumerated(STRING)

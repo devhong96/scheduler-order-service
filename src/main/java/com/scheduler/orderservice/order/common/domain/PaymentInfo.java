@@ -1,33 +1,61 @@
 package com.scheduler.orderservice.order.common.domain;
 
 import com.scheduler.orderservice.order.payment.common.PaymentHistoryDto;
-import jakarta.persistence.Embeddable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
 
+import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
+@Entity
 @Getter
-@Embeddable
 @NoArgsConstructor(access = PROTECTED)
 public class PaymentInfo {
 
-    private String tid;             // PG사 고유 거래 ID (TID)
-    private Integer totalAmount;    // 총 결제 금액
-    private String paymentMethod;   // 결제 수단 (카드, 계좌 등)
-    private String paymentStatus;   // 결제 상태 (승인, 취소 등)
-    private String approvalNumber;  // 카드/결제 승인 번호
-    private LocalDateTime paymentDateTime; // 결제/승인 시간
-    private String cardNumberMasked; // 마스킹된 카드 번호
-    private String cardIssuerCode;  // 카드 발급사 코드/이름
-    private String merchantId;      // 상점 ID
-    private Integer taxAmount;      // 세금 금액 (VAT)
-    private Integer discountAmount; // 할인 금액
+    @Id
+    @GeneratedValue(strategy = IDENTITY)
+    private Long id;
 
-    public static PaymentInfo from(PaymentHistoryDto paymentHistoryDto) {
+    @Column(nullable = false)
+    private String tid;                     // PG사 고유 거래 ID (TID)
+
+    @Column(nullable = false)
+    private Integer totalAmount;            // 총 결제 금액
+
+    @Column(nullable = false)
+    private String paymentMethod;           // 결제 수단 (카드, 계좌 등)
+
+    @Column(nullable = false)
+    private String paymentStatus;           // 결제 상태 (승인, 취소 등)
+
+    @Column(nullable = false)
+    private String approvalNumber;          // 카드/결제 승인 번호
+
+    @Column(nullable = false)
+    private LocalDateTime paymentDateTime;  // 결제/승인 시간
+
+    @Column(nullable = false)
+    private String cardNumberMasked;        // 마스킹된 카드 번호
+
+    @Column(nullable = false)
+    private String cardIssuerCode;          // 카드 발급사 코드/이름
+
+    @Column(nullable = false)
+    private String merchantId;              // 상점 ID
+
+    @Column(nullable = false)
+    private Integer taxAmount;              // 세금 금액 (VAT)
+
+    @Column(nullable = false)
+    private Integer discountAmount;         // 할인 금액
+
+    public static PaymentInfo create(PaymentHistoryDto paymentHistoryDto) {
         PaymentInfo paymentInfo = new PaymentInfo();
         paymentInfo.tid = paymentHistoryDto.getTid();
         paymentInfo.totalAmount = paymentHistoryDto.getTotalAmount();
@@ -40,45 +68,6 @@ public class PaymentInfo {
         paymentInfo.merchantId = paymentHistoryDto.getMerchantId();
         paymentInfo.taxAmount = paymentHistoryDto.getTaxAmount();
         paymentInfo.discountAmount = paymentHistoryDto.getDiscountAmount();
-
         return paymentInfo;
-    }
-
-    public PaymentHistoryDto toDto() {
-        PaymentHistoryDto paymentHistoryDto = new PaymentHistoryDto();
-        paymentHistoryDto.setTid(this.tid);
-        paymentHistoryDto.setTotalAmount(this.totalAmount);
-        paymentHistoryDto.setPaymentMethod(this.paymentMethod);
-        paymentHistoryDto.setPaymentStatus(this.paymentStatus);
-        paymentHistoryDto.setApprovalNumber(this.approvalNumber);
-        paymentHistoryDto.setPaymentDateTime(this.paymentDateTime);
-        paymentHistoryDto.setCardNumberMasked(this.cardNumberMasked);
-        paymentHistoryDto.setCardIssuerCode(this.cardIssuerCode);
-        paymentHistoryDto.setMerchantId(this.merchantId);
-        paymentHistoryDto.setTaxAmount(this.taxAmount);
-        paymentHistoryDto.setDiscountAmount(this.discountAmount);
-        return paymentHistoryDto;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        PaymentInfo that = (PaymentInfo) o;
-        return Objects.equals(tid, that.tid)
-                && Objects.equals(totalAmount, that.totalAmount)
-                && Objects.equals(paymentMethod, that.paymentMethod)
-                && Objects.equals(paymentStatus, that.paymentStatus)
-                && Objects.equals(approvalNumber, that.approvalNumber)
-                && Objects.equals(paymentDateTime, that.paymentDateTime)
-                && Objects.equals(cardNumberMasked, that.cardNumberMasked)
-                && Objects.equals(cardIssuerCode, that.cardIssuerCode)
-                && Objects.equals(merchantId, that.merchantId)
-                && Objects.equals(taxAmount, that.taxAmount)
-                && Objects.equals(discountAmount, that.discountAmount);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(tid, totalAmount, paymentMethod, paymentStatus, approvalNumber, paymentDateTime, cardNumberMasked, cardIssuerCode, merchantId, taxAmount, discountAmount);
     }
 }
